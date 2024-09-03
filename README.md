@@ -10,6 +10,13 @@ MAYZ Trustless OTC Smart Contract aims to solve liquidity and slippage issues fo
   - [Table of Contents](#table-of-contents)
   - [Why This OTC?](#why-this-otc)
   - [Documentation](#documentation)
+  - [Analysis of Possible Solutions](#analysis-of-possible-solutions)
+    - [Individualized Solution:](#individualized-solution)
+    - [Institutional Solution:](#institutional-solution)
+    - [Chosen Solution: Individualized Approach](#chosen-solution-individualized-approach)
+    - [Role of MAYZ and MAYZ Token:](#role-of-mayz-and-mayz-token)
+    - [Considerations:](#considerations)
+    - [Special Considerations:](#special-considerations)
   - [Design and Architecture](#design-and-architecture)
   - [Use Cases and Benefits](#use-cases-and-benefits)
   - [Project Plan](#project-plan)
@@ -27,17 +34,60 @@ Liquidity issues on Cardano's DEXs can lead to high slippage, discouraging large
 
 https://mayz-1.gitbook.io/mayz-otc
 
+## Analysis of Possible Solutions
+
+### Individualized Solution:
+- **Functionality**: Allows individual users to exchange large amounts of tokens for NFTs representing those tokens, which can then be traded in secondary markets.
+- **Pros**: Flexibility and ease of use for individual users.
+- **Cons**: Lack of clarity on what each NFT represents, which can be mitigated by using detailed metadata and descriptive token names.
+- **Architecture**: Managed with a single minting policy and a smart contract or a single Plutus 3 script for both minting and validation. Tokens are stored in a specific address managed by the smart contract. The datum holds crucial information including details about the creator (for MAYZ token retrieval), the quantity and specifics of the tokens represented by the NFT, and other transaction-related data.
+
+### Institutional Solution:
+- **Functionality**: Protocols can create their own OTC contracts to manage large amounts of their own tokens, with the ability to define specific rules for issuing NFTs representing fixed amounts of tokens.
+- **Pros**: Greater organization and control over exchanges, with clear and uniform rules.
+- **Cons**: Need for identification and control over who can operate, and establishing consistent standards which may require reliable oracles for precise token issuance information.
+- **Architecture**: Each protocol may have its own contract and minting policy (each with its own address for storing tokens and minting OTC tokens) or a single Plutus 3 script managing both minting and validation. The datum in institutional contracts includes parameters set by the protocol, such as token amounts and standards. If a centralized protocol is needed for multiple projects, a main protocol smart contract could maintain shared parameters in its datum.
+
+### Chosen Solution: Individualized Approach
+After careful consideration, the Individualized Solution has been chosen for the initial phase of the MAYZ Trustless OTC Smart Contract project. This solution provides the necessary flexibility and ease of use to meet the current needs of individual users while effectively addressing the liquidity and slippage issues in Cardano's ecosystem. This approach aligns with the requirements outlined in our Catalyst-funded project proposal.
+
+The roadmap for this solution includes:
+1. Implementing the basic functionality to allow users to exchange tokens for NFTs using a single smart contract and minting policy.
+2. Ensuring clear metadata and naming conventions for NFTs to enhance transparency.
+3. Gathering user feedback and analyzing the market response to refine and expand the solution.
+4. Exploring the potential to integrate institutional-level solutions as the project evolves, based on market demand and technological advancements.
+
+This initial approach meets our project's current goals, as funded by Project Catalyst, while laying the foundation for future growth and adaptation as we better understand market needs and user interaction with our services.
+
+### Role of MAYZ and MAYZ Token:
+- **MAYZ's Role**: In an institutional setup, MAYZ would decide who can create OTC contracts and set rules for NFT issuance.
+- **MAYZ Token Utility**: Required for both individual and institutional cases. Individuals need MAYZ tokens to initiate contracts and mint NFTs, and protocols would use MAYZ tokens alongside their tokens to create and manage OTC contracts. MAYZ tokens can be retrieved once no tokens are left in the contract.
+
+### Considerations:
+- **Standardization vs. Flexibility**: For institutional cases, protocols could either set their own rules for token issuance or adopt standard ones set by MAYZ, such as a fixed percentage of total tokens (0.1%, 1%). This could be challenging without accurate on-chain data, often needing oracles.
+- **Naming Conventions**: Tokens could follow a standard like "black", "silver", "gold" to represent different amounts, or each protocol could define their own. For individuals, NFT names would illustrate what they represent, e.g., "OTC-LEND-1.50M" for 1,500,000 LEND tokens.
+
+### Special Considerations:
+- **Multi-Token Representation**: Exploring scenarios where OTC tokens could represent more than one type of token, e.g., 1.5M LEND and 2M MIN, offering flexible asset bundling.
+
 ## Design and Architecture
+This section describes the design and architecture of the chosen Individualized Solution.
+
 **Concept**:  
-Implementing an OTC market using Cardano's smart contract capabilities to create a trustless environment for large transactions.
+Implementing an OTC market using Cardano's smart contract capabilities to create a trustless environment for large transactions, focused on individual users.
 
-**Architecture Overview**:  
-- Smart Contracts: Responsible for locking fungible tokens and minting NFTs representing the locked value.
-- Trading Mechanism: NFTs can be traded in secondary marketplaces, allowing users to sell large volumes without slippage.
-- Data Management: Using smart contract datums to track and manage locked tokens and associated NFTs.
+**OTC Token Flow**:  
+1. **Token Locking**: Users deposit tokens into the smart contract.
+2. **NFT Issuance**: The contract mints an NFT that acts as a key to the deposited tokens.
+3. **Trading**: The NFT can be traded on secondary markets, representing ownership of the underlying tokens.
+4. **Redemption**: The holder of the NFT can return it to the contract to unlock the tokens.
 
-**OTC on Cardano - How It Works**:  
-A Haskell smart contract on the Cardano blockchain allows a certain amount of fungible tokens to be locked. The smart contract releases an NFT corresponding to the locked tokens. The contract securely stores the tokens and maintains a datum that records details of the minted NFT and associated tokens. This setup supports issuing an NFT in exchange for tokens and allows reversing the transaction to retrieve the locked tokens.
+**Datum Details**:
+The datum plays a crucial role in the OTC process, storing essential information:
+- Creator details: Enables the retrieval of MAYZ tokens upon completion of the exchange (when someone has traded the NFT for the backed tokens).
+- Token representation: Specifies the quantity of tokens represented by the NFT.
+- Token specifics: Includes details about the policy ID and token name of the backed tokens.
+- Transaction data: Stores other relevant transaction-related information.
 
 ## Use Cases and Benefits
 - **Institutional Investors**: Facilitates large-scale transactions without impacting market prices, offering a more predictable trading environment.
@@ -75,7 +125,7 @@ The project will proceed in phases, starting with research and planning, followe
 - Tackling Slippage on Cardano: MAYZ Trustless OTC Smart Contract - Catalyst Proposal: [Proposal](https://cardano.ideascale.com/c/idea/120544) 
 - Milestones status: [Milestones](https://milestones.projectcatalyst.io/projects/1200222) 
 - MAYZ's OTC GitHub repository: [Repository](https://github.com/MAYZGitHub/mayz-otc) 
-- MAYZ's OTC Documentarion: [GitBook](https://mayz-1.gitbook.io/mayz-otc) 
+- MAYZ's OTC Documentarion: [GitBook](https://mayz-1.gitbook.io/mayz-otc)
 - [MAYZ Website](https://mayz.io/)
 - [MAYZ GitHub](https://github.com/MAYZGitHub/)
 
