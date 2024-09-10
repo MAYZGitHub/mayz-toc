@@ -112,8 +112,8 @@ The current architecture overview includes:
 **Note for Cardano Catalyst Reviewer**: Detailed architecture, including specific contract functions, parameters, redeemers, and datums, will be provided in Milestone 2.
 
 ### Error Handling and Security
-- Token Redemption: The Plutus validator script will include a check to ensure that the specific OTC NFT is burned in the same transaction that attempts to retrieve the underlying tokens. This ensures that only the current holder of the OTC NFT can redeem the locked tokens.
-- Unauthorized Access Prevention: For creators retrieving their tokens (in case no one has traded the OTC NFT), the Plutus validator will compare the transaction's signature with the signature stored in the datum. This ensures that only the original creator can reclaim their tokens if the OTC NFT hasn't been traded.
+- **Token Redemption:** The Plutus validator script will include a check to ensure that the specific OTC NFT is burned in the same transaction that attempts to retrieve the underlying tokens. This ensures that only the current holder of the OTC NFT can redeem the locked tokens.
+- **Unauthorized Access Prevention:** For creators retrieving their tokens (in case no one has traded the OTC NFT), the Plutus validator will compare the transaction's signature with the signature stored in the datum. This ensures that only the original creator can reclaim their tokens if the OTC NFT hasn't been traded.
 
 These validation mechanisms based on Cardano's deterministic nature and Plutus' ability to access transaction details and datum information, providing a secure and trustless redemption process.
 
@@ -133,8 +133,8 @@ This flexible approach allows us to adapt to market needs while ensuring continu
 
 ## External Interactions
 While the OTC smart contracts don't directly depend on oracles or external systems, their utility is realized through interaction with:
-1. NFT Marketplaces: For trading OTC tokens.
-2. Exchange Platforms: For utilizing OTC tokens in various trading scenarios.
+- **NFT Marketplaces:** For trading OTC tokens.
+- **Exchange Platforms:** For utilizing OTC tokens in various trading scenarios.
 
 These interactions are facilitated by the standard Cardano token protocols, ensuring broad compatibility.
 
