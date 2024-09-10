@@ -9,6 +9,7 @@ MAYZ Trustless OTC Smart Contract aims to solve liquidity and slippage issues fo
   - [Overview](#overview)
   - [Table of Contents](#table-of-contents)
   - [Why This OTC?](#why-this-otc)
+  - [Project Status](#project-status)
   - [Documentation](#documentation)
   - [Analysis of Possible Solutions](#analysis-of-possible-solutions)
     - [Individualized Solution:](#individualized-solution)
@@ -18,6 +19,11 @@ MAYZ Trustless OTC Smart Contract aims to solve liquidity and slippage issues fo
     - [Considerations:](#considerations)
     - [Special Considerations:](#special-considerations)
   - [Design and Architecture](#design-and-architecture)
+  - [Smart Contract Architecture](#smart-contract-architecture)
+    - [Error Handling and Security](#error-handling-and-security)
+    - [Interaction with Existing MAYZ Smart Contracts](#interaction-with-existing-mayz-smart-contracts)
+  - [Transition Plan: Individual to Institutional Approach](#transition-plan-individual-to-institutional-approach)
+  - [External Interactions](#external-interactions)
   - [Use Cases and Benefits](#use-cases-and-benefits)
   - [Project Plan](#project-plan)
   - [Milestones](#milestones)
@@ -26,13 +32,21 @@ MAYZ Trustless OTC Smart Contract aims to solve liquidity and slippage issues fo
   - [Acknowledgements](#acknowledgements)
 
 ## Why This OTC?
-Liquidity issues on Cardano's DEXs can lead to high slippage, discouraging large trades. As detailed in the [Research report on liquidity challenges in the Cardano ecosystem](https://docs.google.com/document/d/1WZ7hvn7w34FM8f7xvnZdzBhkokn43SrJW2hU8AAui-c/), the absence of sufficient liquidity for large transactions often results in price impacts that deter large investors. By leveraging a smart contract-based OTC solution, MAYZ provides an alternative that reduces slippage and increases market efficiency, making Cardano a more attractive option for high-volume traders.
+Liquidity issues on Cardano's DEXs can lead to high slippage, discouraging large trades. As detailed in our [Research report on liquidity challenges in the Cardano ecosystem](https://docs.google.com/document/d/1WZ7hvn7w34FM8f7xvnZdzBhkokn43SrJW2hU8AAui-c/), the absence of sufficient liquidity for large transactions often results in price impacts that deter large investors. By leveraging a smart contract-based OTC solution, MAYZ's OTC provides an alternative that reduces slippage and increases market efficiency, making Cardano a more attractive option for high-volume traders.
+
+## Project Status
+We are close to complete Milestone 1 of our project, which focused on research, planning, and initial documentation. Key achievements include:
+
+1. Conducted comprehensive research on liquidity challenges in the Cardano ecosystem.
+2. Developed a detailed project plan outlining our approach and timeline.
+3. Created initial functional documentation providing an overview of the proposed OTC smart contract architecture.
+
+Our current work has laid the foundation for the development stages to come, ensuring we have a solid understanding of the problem space and a clear roadmap for implementation.
+
+Our next steps will involve moving into the detailed design and development phases, where we will start translating our research and plans into concrete smart contract implementations on the Cardano blockchain.
 
 ## Documentation
-
-**Gitbook**
-
-https://mayz-1.gitbook.io/mayz-otc
+- [Gitbook](https://mayz-1.gitbook.io/mayz-otc)
 
 ## Analysis of Possible Solutions
 
@@ -49,7 +63,7 @@ https://mayz-1.gitbook.io/mayz-otc
 - **Architecture**: Each protocol may have its own contract and minting policy (each with its own address for storing tokens and minting OTC tokens) or a single Plutus 3 script managing both minting and validation. The datum in institutional contracts includes parameters set by the protocol, such as token amounts and standards. If a centralized protocol is needed for multiple projects, a main protocol smart contract could maintain shared parameters in its datum.
 
 ### Chosen Solution: Individualized Approach
-After careful consideration, the Individualized Solution has been chosen for the initial phase of the MAYZ Trustless OTC Smart Contract project. This solution provides the necessary flexibility and ease of use to meet the current needs of individual users while effectively addressing the liquidity and slippage issues in Cardano's ecosystem. This approach aligns with the requirements outlined in our Catalyst-funded project proposal.
+After careful consideration, the Individualized Solution has been chosen for the initial phase of the MAYZ Trustless OTC Smart Contract project. This solution provides the necessary flexibility and ease of use to meet the current needs of individual users while effectively addressing the liquidity and slippage issues in Cardano's ecosystem. 
 
 The roadmap for this solution includes:
 1. Implementing the basic functionality to allow users to exchange tokens for NFTs using a single smart contract and minting policy.
@@ -57,7 +71,7 @@ The roadmap for this solution includes:
 3. Gathering user feedback and analyzing the market response to refine and expand the solution.
 4. Exploring the potential to integrate institutional-level solutions as the project evolves, based on market demand and technological advancements.
 
-This initial approach meets our project's current goals, as funded by Project Catalyst, while laying the foundation for future growth and adaptation as we better understand market needs and user interaction with our services.
+**Note about Cardano Catalyst**: This initial approach meets our project's current goals, as funded by Cardano Project Catalyst, while laying the foundation for future growth and adaptation as we better understand market needs and user interaction with our services.
 
 ### Role of MAYZ and MAYZ Token:
 - **MAYZ's Role**: In an institutional setup, MAYZ would decide who can create OTC contracts and set rules for NFT issuance.
@@ -89,6 +103,41 @@ The datum plays a crucial role in the OTC process, storing essential information
 - Token specifics: Includes details about the policy ID and token name of the backed tokens.
 - Transaction data: Stores other relevant transaction-related information.
 
+## Smart Contract Architecture
+The current architecture overview includes:
+1. Token Locking Contract: Allows users to lock fungible tokens.
+2. NFT Minting Contract: Mints NFTs representing locked tokens.
+3. Redemption Contract: Handles the exchange of NFTs back to fungible tokens.
+
+**Note for Cardano Catalyst Reviewer**: Detailed architecture, including specific contract functions, parameters, redeemers, and datums, will be provided in Milestone 2.
+
+### Error Handling and Security
+- Token Redemption: The Plutus validator script will include a check to ensure that the specific OTC NFT is burned in the same transaction that attempts to retrieve the underlying tokens. This ensures that only the current holder of the OTC NFT can redeem the locked tokens.
+- Unauthorized Access Prevention: For creators retrieving their tokens (in case no one has traded the OTC NFT), the Plutus validator will compare the transaction's signature with the signature stored in the datum. This ensures that only the original creator can reclaim their tokens if the OTC NFT hasn't been traded.
+
+These validation mechanisms based on Cardano's deterministic nature and Plutus' ability to access transaction details and datum information, providing a secure and trustless redemption process.
+
+### Interaction with Existing MAYZ Smart Contracts
+The OTC smart contracts operate independently of existing MAYZ contracts. The only interaction is the use of MAYZ tokens for creating OTC tokens, which are minted using separate MAYZ minting contracts.
+
+## Transition Plan: Individual to Institutional Approach
+This is our vision for potential future expansion:
+
+1. Coexistence: Individual and institutional approaches may coexist, catering to different user needs.
+2. Separate Deployment: Institutional contracts will be deployed separately, not replacing individual contracts.
+3. Continuity: Existing individual OTC tokens will remain valid and functional.
+4. Unified Interface: We plan to develop a single entry point listing both individual and institutional OTC options.
+5. Incentivization: Based on market dynamics, we may introduce incentives to encourage the use of institutional OTCs if deemed beneficial.
+
+This flexible approach allows us to adapt to market needs while ensuring continuity for early adopters.
+
+## External Interactions
+While the OTC smart contracts don't directly depend on oracles or external systems, their utility is realized through interaction with:
+1. NFT Marketplaces: For trading OTC tokens.
+2. Exchange Platforms: For utilizing OTC tokens in various trading scenarios.
+
+These interactions are facilitated by the standard Cardano token protocols, ensuring broad compatibility.
+
 ## Use Cases and Benefits
 - **Institutional Investors**: Facilitates large-scale transactions without impacting market prices, offering a more predictable trading environment.
 - **New Projects**: Provides a way to raise funds and manage liquidity without the high costs and risks associated with traditional liquidity provision methods.
@@ -98,10 +147,10 @@ The datum plays a crucial role in the OTC process, storing essential information
 ## Project Plan
 The project will proceed in phases, starting with research and planning, followed by development, testing, and public release. The project plan outlines the objectives, timeline, and deliverables, ensuring a structured approach to developing the Trustless OTC solution. Key phases include:
 
-1. Research and analysis of liquidity issues.
-2. Creation of a detailed project plan and timeline.
-3. Development of functional and technical documentation.
-4. Prototype development, testing, and public release.
+1. Research and analysis of liquidity issues (Completed in Milestone 1)
+2. Creation of a detailed project plan and timeline (Completed in Milestone 1)
+3. Development of functional and technical documentation (Initiated in Milestone 1, to be completed in Milestone 2)
+4. Prototype development, testing, and public release
 
 ## Milestones
 1. **Project Planning, Research, and Technical Documentation**  
@@ -121,11 +170,10 @@ The project will proceed in phases, starting with research and planning, followe
    - Acceptance Criteria: Contracts deployed, website functional, educational content available, and all resources meet Catalyst requirements.
 
 ## Links
-
 - Tackling Slippage on Cardano: MAYZ Trustless OTC Smart Contract - Catalyst Proposal: [Proposal](https://cardano.ideascale.com/c/idea/120544) 
 - Milestones status: [Milestones](https://milestones.projectcatalyst.io/projects/1200222) 
 - MAYZ's OTC GitHub repository: [Repository](https://github.com/MAYZGitHub/mayz-otc) 
-- MAYZ's OTC Documentarion: [GitBook](https://mayz-1.gitbook.io/mayz-otc)
+- MAYZ's OTC Documentation: [GitBook](https://mayz-1.gitbook.io/mayz-otc)
 - [MAYZ Website](https://mayz.io/)
 - [MAYZ GitHub](https://github.com/MAYZGitHub/)
 
