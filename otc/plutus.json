@@ -1,0 +1,14 @@
+{
+  "preamble": {
+    "title": "mayz/otc",
+    "description": "MAYZ OTC contract for Catalyst",
+    "version": "0.0.1",
+    "plutusVersion": "v3",
+    "compiler": {
+      "name": "Aiken",
+      "version": "v1.1.5+a7741ec"
+    },
+    "license": "Apache-2.0"
+  },
+  "validators": []
+}
