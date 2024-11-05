@@ -1,7 +1,7 @@
 {
   "preamble": {
     "title": "mayz/otc",
-    "description": "MAYZ OTC contract for Catalyst",
+    "description": "MAYZ OTC smart contracts for Catalyst",
     "version": "0.0.1",
     "plutusVersion": "v3",
     "compiler": {
