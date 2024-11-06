@@ -1,6 +1,6 @@
-## OTC
+# OTC
 
-# High level overview
+## High level overview
 
 $MAYZ Token Utility: Required for both individual and institutional cases. Individuals need $MAYZ tokens to initiate contracts and mint NFTs, and protocols would use $MAYZ tokens alongside their tokens to create and manage OTC contracts. $MAYZ tokens can be retrieved once no tokens are left in the contract.
 
@@ -39,15 +39,15 @@ For more information visit the README in the repo's root folder.
 https://github.com/MAYZGitHub/mayz-otc/blob/main/README.md
 
 
-# 1. Protocol validator (TBC Manu)
+## 1. Protocol validator (TBC Manu)
 
 
-# 2. Script validator.
+## 2. Script validator.
 This is the actual OTC contract, it will work with 2 well known Plutus purposes, "mint" and "spend". Since we are using Plutus V3, we can handle both within the same validator.
 We will need to make use of the following info:
 
 
-# ID NFT - Datum
+### ID NFT - Datum
 1. OTC token creator wallet (pkh)
 2. Policy + assetName of FTs to be locked
 3. Amount of tokens being locked
@@ -56,25 +56,26 @@ We will need to make use of the following info:
 6. minADA - Amount of lovelaces to be required accompanying native tokens in their UTXOs 
 
 
-# Redeemer - Actions
-Create: Mint ID and OTC tokens, locks funds and ID with correct Script Datum, sends out the OTC token.
-        * Will read Reference UTXO with the Protocol Datum to obtain required info such as $MAYZ required as deposit
-        * Redeemer will include assetName and value Pair
-        * OTC Token amount must be +1
-        * ID Token amount must be +1
-        * MAYZ included in inputs must match the protocol 
-        * Locked tokens assetName + value Pair must match redeemer and Datum
-        * Locked tokens, $MAYZ and "ID" must be sent to the validator
-        * OTC token must be sent to TX signer ??? (Perhaps it's a good idea to check this to avoid scam sites using our contract maliciously?) 
+### Redeemer - Actions
+
+#### Create: Mint ID and OTC tokens, locks funds and ID with correct Script Datum, sends out the OTC token.
+* Will read Reference UTXO with the Protocol Datum to obtain required info such as $MAYZ required as deposit
+* Redeemer will include assetName and value Pair
+* OTC Token amount must be +1
+* ID Token amount must be +1
+* MAYZ included in inputs must match the protocol 
+* Locked tokens assetName + value Pair must match redeemer and Datum
+* Locked tokens, $MAYZ and "ID" must be sent to the validator
+* OTC token must be sent to TX signer ??? (Perhaps it's a good idea to check this to avoid scam sites using our contract maliciously?) 
 
 
-Close:  Burning of the OTC and ID tokens. Unlocks funds if still present. Unlocks MAYZ deposit
+#### Close:  Burning of the OTC and ID tokens. Unlocks funds if still present. Unlocks MAYZ deposit
         - Insures the ID and OTC tokens are burned in the TX
         - Validates that the TX signer is the token creator
         - ...
 
 
-Claim:  Claiming if the OTC token for the locked FTs.
+#### Claim:  Claiming if the OTC token for the locked FTs.
         - Validate the correct OTC token, locked tokens, deposited MAYZ and ID token are included in the inputs
         - OTC, MAYZ and ID tokens are sent to the validator
         - Locked tokens must be sent to TX signer ??? (Perhaps it's a good idea to check this to avoid scam sites using our contract maliciously?)
