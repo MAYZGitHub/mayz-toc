@@ -58,14 +58,14 @@ We will need to make use of the following info:
 
 # Redeemer - Actions
 Create: Mint ID and OTC tokens, locks funds and ID with correct Script Datum, sends out the OTC token.
-        - Will read Reference UTXO with the Protocol Datum to obtain required info such as $MAYZ required as deposit
-        - Redeemer will include assetName and value Pair
-        - OTC Token amount must be +1
-        - ID Token amount must be +1
-        - MAYZ included in inputs must match the protocol 
-        - Locked tokens assetName + value Pair must match redeemer and Datum
-        - Locked tokens, $MAYZ and "ID" must be sent to the validator
-        - OTC token must be sent to TX signer ??? (Perhaps it's a good idea to check this to avoid scam sites using our contract maliciously?) 
+        * Will read Reference UTXO with the Protocol Datum to obtain required info such as $MAYZ required as deposit
+        * Redeemer will include assetName and value Pair
+        * OTC Token amount must be +1
+        * ID Token amount must be +1
+        * MAYZ included in inputs must match the protocol 
+        * Locked tokens assetName + value Pair must match redeemer and Datum
+        * Locked tokens, $MAYZ and "ID" must be sent to the validator
+        * OTC token must be sent to TX signer ??? (Perhaps it's a good idea to check this to avoid scam sites using our contract maliciously?) 
 
 
 Close:  Burning of the OTC and ID tokens. Unlocks funds if still present. Unlocks MAYZ deposit
