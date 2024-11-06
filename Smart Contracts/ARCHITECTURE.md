@@ -70,22 +70,14 @@ We will need to make use of the following info:
 
 
 #### Close:  Burning of the OTC and ID tokens. Unlocks funds if still present. Unlocks MAYZ deposit
-        - Insures the ID and OTC tokens are burned in the TX
-        - Validates that the TX signer is the token creator
-        - ...
+* Insures the ID and OTC tokens are burned in the TX
+* Validates that the TX signer is the token creator
+* ...
 
 
 #### Claim:  Claiming if the OTC token for the locked FTs.
-        - Validate the correct OTC token, locked tokens, deposited MAYZ and ID token are included in the inputs
-        - OTC, MAYZ and ID tokens are sent to the validator
-        - Locked tokens must be sent to TX signer ??? (Perhaps it's a good idea to check this to avoid scam sites using our contract maliciously?)
-        - ...
-
-
-
-We need to validate the following info for the mint:
-    - Datum (correct fields, assetName matches redeemer)
-    - Values (ID, OTC, tokens being locked and MAYZ deposited)
-    - MAYZ, ID and the tokens being locked must be sent to the validators address
-    - OTC token must be sent to the TX signer ??? (Perhaps it's a good idea to check this to avoid scam sites using our contract maliciously?)
+* Validate the correct OTC token, locked tokens, deposited MAYZ and ID token are included in the inputs
+* OTC, MAYZ and ID tokens are sent to the validator
+* Locked tokens must be sent to TX signer ??? (Perhaps it's a good idea to check this to avoid scam sites using our contract maliciously?)
+* ...
     
