@@ -43,8 +43,13 @@ https://github.com/MAYZGitHub/mayz-otc/blob/main/README.md
 
 
 ## 2. Script validator.
-This is the actual OTC contract, it will work with 2 well known Plutus purposes, "mint" and "spend". Since we are using Plutus V3, we can handle both within the same validator.
-We will need to make use of the following info:
+This is the actual OTC contract, written in Aiken, it will work with 2 well known Plutus purposes, "mint" and "spend". Since we are using Aiken v1.1.5, which supports Plutus V3, we can handle both within the same validator.
+Here's the details:
+
+
+### Dependencies
+* aiken v1.1.5
+* aiken-lang/stdlib v2.1.0
 
 
 ### ID NFT - Datum
@@ -65,19 +70,29 @@ We will need to make use of the following info:
 * ID Token amount must be +1
 * MAYZ included in inputs must match the protocol 
 * Locked tokens assetName + value Pair must match redeemer and Datum
-* Locked tokens, $MAYZ and "ID" must be sent to the validator
+* Locked tokens, $MAYZ and ID token must be sent to the validator
 * OTC token must be sent to TX signer ??? (Perhaps it's a good idea to check this to avoid scam sites using our contract maliciously?) 
 
 
-#### Close:  Burning of the OTC and ID tokens. Unlocks funds if still present. Unlocks MAYZ deposit
+#### Close:  Burning of the OTC and ID tokens. Unlocks MAYZ deposit
+* Identify input by locating the ID token
+* Validate the correct amount of minADA, OTC token, deposited MAYZ and ID token are included in the inputs
 * Insures the ID and OTC tokens are burned in the TX
-* Validates that the TX signer is the token creator
-* ...
+* Validates that the TX signer is the token creator, by matching the ID datum.
+* minADA and the deposited $MAYZ are sent back to the creator
 
 
 #### Claim:  Claiming if the OTC token for the locked FTs.
-* Validate the correct OTC token, locked tokens, deposited MAYZ and ID token are included in the inputs
-* OTC, MAYZ and ID tokens are sent to the validator
+* Identify input by locating the ID token
+* Output datum must match the ID datum
+* Validate the correct amount of minADA, OTC token, locked tokens, deposited MAYZ and ID token are included in the inputs
+* OTC, $MAYZ, minADA and ID tokens are sent to the validator
 * Locked tokens must be sent to TX signer ??? (Perhaps it's a good idea to check this to avoid scam sites using our contract maliciously?)
-* ...
-    
+
+
+#### Cancel: Undo OTC token creation and release of all funds back to the creator.
+* Identify input by locating the ID token
+* Validate the correct amount of locked tokens, minADA, OTC token, deposited MAYZ and ID token are included in the inputs
+* Insures the ID and OTC tokens are burned in the TX
+* Validates that the TX signer is the token creator, by matching the ID datum
+* minADA, locked tokens and the deposited $MAYZ are sent back to the creator
