@@ -36,7 +36,9 @@ For more information visit the README in the repo's root folder.
 https://github.com/MAYZGitHub/mayz-otc/blob/main/README.md
 
 
+
 ## 1. Protocol validator (TBC Manu)
+
 
 
 ## 2. Script validator.
