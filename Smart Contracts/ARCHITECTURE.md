@@ -62,6 +62,7 @@ The ID token datum must include the following details:
 
 
 ### Redeemer - Actions
+In the redeemer we will pass the desired action for our validator to process, depending on this we will have to evaluate multiple conditions.
 
 #### Create: Mint ID and OTC tokens, locks funds and ID with correct Script Datum, sends out the OTC token.
 * Will read Reference UTXO with the Protocol Datum to obtain required info such as $MAYZ required as deposit
