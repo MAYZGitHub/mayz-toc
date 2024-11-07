@@ -6,33 +6,30 @@ $MAYZ Token Utility: Required for both individual and institutional cases. Indiv
 
 Naming Conventions: For individuals, NFT names would illustrate what they represent, e.g., "OTC-LEND-1.50M" for 1,500,000 LEND tokens.
 
-OTC Token Flow:
+### OTC Token Flow:
 
-Token Locking: Users deposit tokens into the smart contract.
-NFT Issuance: The contract mints an NFT that acts as a key to the deposited tokens.
-Trading: The NFT can be traded on secondary markets, representing ownership of the underlying tokens.
-Redemption: The holder of the NFT can return it to the contract to unlock the tokens.
-Datum Details: The datum plays a crucial role in the OTC process, storing essential information:
+* Token Locking: Users deposit tokens into the smart contract.
+* NFT Issuance: The contract mints an NFT that acts as a key to the deposited tokens.
+* Trading: The NFT can be traded on secondary markets, representing ownership of the underlying tokens.
+* Redemption: The holder of the NFT can return it to the contract to unlock the tokens.
+* Datum Details: The datum plays a crucial role in the OTC process, storing essential information:
+* Creator details: Enables the retrieval of $MAYZ tokens upon completion of the exchange (when someone has traded the NFT for the backed tokens).
+* Token representation: Specifies the quantity of tokens represented by the NFT.
+* Token specifics: Includes details about the policy ID and token name of the backed tokens.
+* Transaction data: Stores other relevant transaction-related information.
 
-Creator details: Enables the retrieval of $MAYZ tokens upon completion of the exchange (when someone has traded the NFT for the backed tokens).
-Token representation: Specifies the quantity of tokens represented by the NFT.
-Token specifics: Includes details about the policy ID and token name of the backed tokens.
-Transaction data: Stores other relevant transaction-related information.
-
-Smart Contract Architecture
+### Smart Contract Architecture
 The current architecture overview includes:
 
-Protocol Validator contract: To store important protocol parameters, such as $MAYZ required to mint.
-Token Locking Contract: Allows users to lock fungible tokens.
-NFT Minting Contract: Mints NFTs representing locked tokens.
-Redemption Contract: Handles the exchange of NFTs back to fungible tokens and withdrawal of locked MAYZ.
-"ID" NFT: To store important information about the minted OTC NFT and the underlying locked tokens.
+* Protocol Validator contract: To store important protocol parameters, such as $MAYZ required to mint.
+* Token Locking Contract: Allows users to lock fungible tokens.
+* NFT Minting Contract: Mints NFTs representing locked tokens.
+* Redemption Contract: Handles the exchange of NFTs back to fungible tokens and withdrawal of locked MAYZ.
+* ID Token: To store important information about the minted OTC NFT and the underlying locked tokens.
 
-Error Handling and Security
-Token Redemption: The Plutus validator script will include a check to ensure that the specific OTC NFT is burned in the same transaction that attempts to retrieve the underlying tokens. 
-This ensures that only the current holder of the OTC NFT can redeem the locked tokens.
-Unauthorized Access Prevention: For creators retrieving their tokens (in case no one has traded the OTC NFT), the Plutus validator will compare the transaction's signature with the signature stored in the datum. 
-This ensures that only the original creator can reclaim their tokens if the OTC NFT hasn't been traded.
+### Error Handling and Security
+* Token Redemption: The Plutus validator script will include a check to ensure that the specific OTC NFT is burned in the same transaction that attempts to retrieve the underlying tokens. This ensures that only the current holder of the OTC NFT can redeem the locked tokens.
+* Unauthorized Access Prevention: For creators retrieving their tokens (in case no one has traded the OTC NFT), the Plutus validator will compare the transaction's signature with the signature stored in the datum. This ensures that only the original creator can reclaim their tokens if the OTC NFT hasn't been traded.
 
 For more information visit the README in the repo's root folder.
 
@@ -52,13 +49,14 @@ Here's the details:
 * aiken-lang/stdlib v2.1.0
 
 
-### ID NFT - Datum
-1. OTC token creator wallet (pkh)
-2. Policy + assetName of FTs to be locked
-3. Amount of tokens being locked
-4. Amount of $MAYZ tokens locked
-5. Policy + assetName of the "ID" NFT (where we will save important data)
-6. minADA - Amount of lovelaces to be required accompanying native tokens in their UTXOs 
+### ID token - Datum
+The ID token datum must include the following details:
+
+1. OTC token creator wallet (pkh) - PaymentCredential
+2. Policy + assetName and amount of FTs to be locked - Value
+4. Amount of $MAYZ tokens locked - Value
+5. Policy + assetName of the "ID" NFT (where we will save important data) - String
+6. minADA - Amount of lovelaces to be required accompanying native tokens in their UTXOs - Value
 
 
 ### Redeemer - Actions
