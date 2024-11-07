@@ -39,7 +39,7 @@ https://github.com/MAYZGitHub/mayz-otc/blob/main/README.md
 
 ## 1. Protocol validator (TBC Manu)
 
-
+...
 
 ## 2. Script validator.
 This is the actual OTC contract, written in Aiken, it will work with 2 well known Plutus purposes, "mint" and "spend". Since we are using Aiken v1.1.5, which supports Plutus V3, we can handle both within the same validator.
