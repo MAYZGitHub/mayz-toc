@@ -57,7 +57,7 @@ The ID token datum must include the following details:
 1. OTC token creator wallet (pkh) - PaymentCredential
 2. Policy + assetName and amount of FTs to be locked - Value
 4. Amount of $MAYZ tokens locked - Value
-5. Policy + assetName of the "ID" NFT (where we will save important data) - String
+5. Policy + assetName of the "ID" NFT (used to save important data and locate UTXO with the locked tokens) - AssetName
 6. minADA - Amount of lovelaces to be required accompanying native tokens in their UTXOs - Value
 
 
@@ -65,29 +65,30 @@ The ID token datum must include the following details:
 In the redeemer we will pass the desired action for our validator to process, depending on this we will have to evaluate multiple conditions.
 
 #### Create: Mint ID and OTC tokens, locks funds and ID with correct Script Datum, sends out the OTC token.
+* Redeemer must include the "Create" action, assetName Value pair, OTC token name
 * Will read Reference UTXO with the Protocol Datum to obtain required info such as $MAYZ required as deposit
-* Redeemer will include assetName and value Pair
-* OTC Token amount must be +1
-* ID Token amount must be +1
-* MAYZ included in inputs must match the protocol 
-* Locked tokens assetName + value Pair must match redeemer and Datum
-* Locked tokens, $MAYZ and ID token must be sent to the validator
+* OTC Token amount must be 1
+* ID Token amount must be 1
+* $MAYZ included in inputs must match the protocol datum
+* Locked tokens assetName + value Pair must match redeemer and ID token Datum
+* Locked tokens, $MAYZ, ID token and minADA must be sent to the validator
 * OTC token must be sent to TX signer ??? (Perhaps it's a good idea to check this to avoid scam sites using our contract maliciously?) 
 
-
 #### Close:  Burning of the OTC and ID tokens. Unlocks MAYZ deposit
+* Redeemer must include the "Close" action.
 * Identify input by locating the ID token
 * Validate the correct amount of minADA, OTC token, deposited MAYZ and ID token are included in the inputs
 * Insures the ID and OTC tokens are burned in the TX
-* Validates that the TX signer is the token creator, by matching the ID datum.
+* Validates that the TX signer is the token creator, by matching the ID token Datum.
 * minADA and the deposited $MAYZ are sent back to the creator
 
 
 #### Claim:  Claiming if the OTC token for the locked FTs.
+* Redeemer must include the "Claim" action
 * Identify input by locating the ID token
 * Output datum must match the ID datum
 * Validate the correct amount of minADA, OTC token, locked tokens, deposited MAYZ and ID token are included in the inputs
-* OTC, $MAYZ, minADA and ID tokens are sent to the validator
+* OTC, $MAYZ, minADA and ID token are sent to the validator
 * Locked tokens must be sent to TX signer ??? (Perhaps it's a good idea to check this to avoid scam sites using our contract maliciously?)
 
 
@@ -95,5 +96,5 @@ In the redeemer we will pass the desired action for our validator to process, de
 * Identify input by locating the ID token
 * Validate the correct amount of locked tokens, minADA, OTC token, deposited MAYZ and ID token are included in the inputs
 * Insures the ID and OTC tokens are burned in the TX
-* Validates that the TX signer is the token creator, by matching the ID datum
+* Validates that the TX signer is the token creator, by matching the ID token Datum
 * minADA, locked tokens and the deposited $MAYZ are sent back to the creator
