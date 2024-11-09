@@ -159,6 +159,7 @@ The project will proceed in phases, starting with research and planning, followe
 Here are the links to the Catalyst Milestone reports for the project. Each report provides an update on the project's progress, achievements, and next steps for each milestone.
 
 [Milestone 1 Report](./catalyst-reports/MILESTONE-01.md)
+[Milestone 2 Report](./catalyst-reports/MILESTONE-02.md)
 
 ## Links
 - Tackling Slippage on Cardano: MAYZ Trustless OTC Smart Contract - Catalyst Proposal: [Proposal](https://cardano.ideascale.com/c/idea/120544) 
@@ -166,6 +167,8 @@ Here are the links to the Catalyst Milestone reports for the project. Each repor
 - MAYZ's OTC GitHub repository: [Repository](https://github.com/MAYZGitHub/mayz-otc) 
 - MAYZ's OTC Documentation: [GitBook](https://mayz-1.gitbook.io/mayz-otc)
 - [MAYZ Website](https://mayz.io/)
+- [MAYZ X](https://twitter.com/MAYZProtocol)
+- [MAYZ Discord](https://discord.com/invite/6xkbynuNrj)
 - [MAYZ GitHub](https://github.com/MAYZGitHub/)
 
 ## About MAYZ Protocol
