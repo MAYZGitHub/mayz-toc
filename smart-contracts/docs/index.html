@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>mayz/otc</title>
+    <meta name="theme-color" content="#eff1f5" media="(prefers-color-scheme: light)"/>
+    <meta name="theme-color" content="#1e1e2e" media="(prefers-color-scheme: dark)"/>
+    <link rel="icon" type="image/svg+xml" sizes="any" href="./favicon.svg"/>
+    <link rel="stylesheet" href="./css/index.css?v=1.1.5" type="text/css"/>
+    <link id="syntax-theme" rel="stylesheet" href="./css/atom-one-light.min.css?v=1.1.5"/>
+  </head>
+  <body class="prewrap-off theme-light drawer-closed">
+    <script>
+      "use strict";
+      window.breadcrumbs = '.';
+      const aikenConfig = {
+        theme: {
+          values: (() => {
+            const dark = {
+              value: "dark",
+              label: "Switch to light mode",
+              icons: ["moon"],
+            };
+            const light = {
+              value: "light",
+              label: "Switch to dark mode",
+              icons: ["sun"],
+            };
+            return (
+              window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? [dark, light]
+              : [light, dark]
+            ).map((item, index) => {
+              item.icons.push(`toggle-${0 === index ? "left" : "right"}`);
+              return item;
+            });
+          })(),
+
+          update: () => "light" === Aiken.getProperty("theme") ? "dark" : "light",
+
+          callback: function(value) {
+            const syntaxThemes = {
+              dark: "atom-one-dark",
+              light: "atom-one-light",
+            };
+            const syntaxTheme = document.querySelector("#syntax-theme");
+            const hrefParts = syntaxTheme.href.match(
+              /^(.*?)([^/\\#?]+?)((?:\.min)?\.css.*)$/i
+            );
+            if (syntaxThemes[value] !== hrefParts[2]) {
+              hrefParts[2] = syntaxThemes[value];
+              hrefParts.shift();
+              syntaxTheme.href = hrefParts.join("");
+            }
+          },
+        },
+        prewrap: {
+          values: [
+            {
+              value: "off",
+              label: "Switch to line-wrapped snippets",
+              icons: ["more-horizontal", "toggle-left"],
+            },
+            {
+              value: "on",
+              label: "Switch to non-wrapped snippets",
+              icons: ["more-vertical", "toggle-right"],
+            },
+          ],
+
+          update: () => "off" === Aiken.getProperty("prewrap") ? "on" : "off",
+        },
+      };
+    </script>
+
+    <script>
+      "use strict";
+
+      /* Initialise options before any content loads */
+      void function() {
+        for (const property in aikenConfig) {
+          const name = `Aiken.${property}`;
+
+          let value;
+
+          try {
+            value = localStorage.getItem(name);
+            if (value.startsWith('"') && value.endsWith('"')) {
+              localStorage.setItem(name, value.slice(1, value.length - 1));
+            }
+          }
+          catch (_error) {}
+
+          const defaultValue = aikenConfig[property].values[0].value;
+          try {
+            value = localStorage.getItem(name);
+          }
+          catch(_error) {}
+          if (-1 < [null, undefined].indexOf(value)) {
+            value = defaultValue;
+          }
+          const bodyClasses = document.body.classList;
+          bodyClasses.remove(`${property}-${defaultValue}`);
+          bodyClasses.add(`${property}-${value}`);
+          try {
+            aikenConfig[property].callback(value);
+          }
+          catch(_error) {}
+        }
+      }();
+    </script>
+
+    <header class="page-header">
+      <button class="sidebar-toggle" tabindex="0">
+        <svg class="label label-closed icon icon-menu" alt="Open Menu" title="Open Menu"><use xlink:href="#icon-menu"></use></svg>
+        <svg class="label label-open icon icon-x-circle" alt="Close Menu" title="Close Menu"><use xlink:href="#icon-x-circle"></use></svg>
+      </button>
+
+      <h2>
+        <a href="./">otc</a>
+        <span id="project-version">
+          <span>0.0.1 </span>
+        </span>
+        <script>
+          "use strict";
+
+          if ("undefined" !== typeof versionNodes) {
+            const currentVersion = "v0.0.1";
+            if (! versionNodes.find(element => element.version === currentVersion)) {
+              versionNodes.unshift({ version: currentVersion, url: "#" });
+            }
+            document.querySelector("#project-version").innerHTML =
+              versionNodes.reduce(
+                (acc, element) => {
+                  const status =
+                    currentVersion === element.version ? "selected disabled" : "";
+                  return `
+                    ${acc}
+                      <option value="${element.url}" ${status}>
+                        ${element.version}
+                      </option>
+                  `;
+                },
+                `
+                <form autocomplete="off">
+                  <select onchange="window.location.href = this.value">
+                `
+              ) + `
+                  </select>
+                  <svg class="icon icon-chevrons-down"><use xlink:href="#icon-chevrons-down"></use></svg>
+                </form>
+              `;
+          }
+        </script>
+      </h2>
+      <div class="search">
+        <div class="search-input-wrap">
+          <input type="text" id="search-input" class="search-input" tabindex="0" aria-label="Search otc" autocomplete="off">
+          <label for="search-input" class="search-label"><svg viewBox="0 0 24 24" class="search-icon"><use xlink:href="#icon-svg-search"></use></svg></label>
+        </div>
+        <div id="search-results" class="search-results"></div>
+      </div>
+
+      <button class="search-nav-button" id="search-nav-button" tabindex="0">
+        <svg class="label icon icon-x-circle" alt="Open Search" title="Open Search"><use xlink:href="#icon-svg-search"></use></svg>
+      </button>
+
+      <nav>
+        <a href="https://aiken-lang.github.io/prelude/aiken.html">Prelude</a>
+        <a href="https://aiken-lang.github.io/prelude/aiken/builtin.html">Built-ins</a>
+        <a href="https://aiken-lang.github.io/stdlib">Stdlib</a>
+      </nav>
+    </header>
+
+    <div class="page">
+      <nav class="sidebar">
+        <button class="sidebar-toggle" tabindex="1">
+          <svg class="label icon icon-x-circle" alt="Close Menu" title="Close Menu"><use xlink:href="#icon-x-circle"></use></svg>
+        </button>
+
+        
+        <h2>Source code</h2>
+        <ul>
+          <li><a href="https://github.com/MAYZGitHub/mayz-otc">MAYZGitHub/mayz-otc</a></li>
+        </ul>
+        
+
+        
+
+        <h2>Modules</h2>
+        <ul>
+        
+	  
+	    
+	      <li data-indent="0"><a href="./types.html">
+	      types
+	      </a></li>
+	    
+	  
+        
+	  
+	    
+	      <li data-indent="0"><a href="./utils.html">
+	      utils
+	      </a></li>
+	    
+	  
+        
+        </ul>
+      </nav>
+
+      <main class="content">
+        
+<h1>MAYZ Trustless OTC Smart Contract - Architecture</h1>
+<h2>Table of Contents</h2>
+<ul>
+<li><a href="#mayz-trustless-otc-smart-contract---architecture">MAYZ Trustless OTC Smart Contract - Architecture</a>
+<ul>
+<li><a href="#table-of-contents">Table of Contents</a></li>
+<li><a href="#overview">Overview</a>
+<ul>
+<li><a href="#dependencies">Dependencies</a></li>
+</ul>
+</li>
+<li><a href="#install">Install</a></li>
+<li><a href="#smart-contract-components">Smart Contract Components</a>
+<ul>
+<li><a href="#protocol-contract">Protocol Contract</a>
+<ul>
+<li><a href="#parameters">Parameters</a></li>
+<li><a href="#protocol-datum-structure">Protocol Datum Structure</a>
+<ul>
+<li><a href="#field-descriptions">Field Descriptions</a></li>
+</ul>
+</li>
+<li><a href="#authorization-logic">Authorization Logic</a></li>
+<li><a href="#protocol-redeemers">Protocol Redeemers</a>
+<ul>
+<li><a href="#1-createprotocol">1. CreateProtocol</a></li>
+<li><a href="#2-updateprotocolparams">2. UpdateProtocolParams</a></li>
+<li><a href="#3-updateprotocolminada">3. UpdateProtocolMinADA</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#otc-nft-minting-policy">OTC NFT Minting Policy</a>
+<ul>
+<li><a href="#parameters-1">Parameters</a></li>
+<li><a href="#minting-policy-logic">Minting Policy Logic</a></li>
+<li><a href="#minting-policy-redeemers">Minting Policy Redeemers</a>
+<ul>
+<li><a href="#1-mintnft">1. MintNFT</a></li>
+<li><a href="#2-burnnft">2. BurnNFT</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#otc-contract">OTC Contract</a>
+<ul>
+<li><a href="#parameters-2">Parameters</a></li>
+<li><a href="#otc-datum-structure">OTC Datum Structure</a>
+<ul>
+<li><a href="#field-descriptions-1">Field Descriptions</a></li>
+</ul>
+</li>
+<li><a href="#otc-redeemers">OTC Redeemers</a>
+<ul>
+<li><a href="#1-createotc">1. CreateOTC</a></li>
+<li><a href="#1-claimotc">1. ClaimOTC</a></li>
+<li><a href="#2-closeotc">2. CloseOTC</a></li>
+<li><a href="#3-cancelotc">3. CancelOTC</a></li>
+<li><a href="#4-updateotcminada">4. UpdateOTCMinADA</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#token-flow-and-interactions">Token Flow and Interactions</a>
+<ul>
+<li><a href="#token-standards">Token Standards</a></li>
+<li><a href="#creation-flow">Creation Flow</a></li>
+<li><a href="#redemption-flow">Redemption Flow</a></li>
+<li><a href="#closing-flow">Closing Flow</a></li>
+<li><a href="#cancellation-flow">Cancellation Flow</a></li>
+</ul>
+</li>
+<li><a href="#transaction-diagrams">Transaction Diagrams</a></li>
+<li><a href="#security-considerations">Security Considerations</a></li>
+<li><a href="#metadata-handling">Metadata Handling</a></li>
+</ul>
+</li>
+</ul>
+<h2>Overview</h2>
+<p>The MAYZ Trustless OTC Smart Contract architecture consists of three main components written in Aiken v1.1.5:</p>
+<ol>
+<li>Protocol Contract: Manages protocol parameters and mints Protocol ID tokens using Plutus V3 capabilities.</li>
+<li>OTC Contract: Handles token locking, redemption processes, and minting/burning of OTC ID tokens using Plutus V3 capabilities.</li>
+<li>OTC NFT Minting Policy: Dedicated policy for minting unique OTC NFT tokens per position.</li>
+</ol>
+<h3>Dependencies</h3>
+<ul>
+<li>Aiken v1.1.5</li>
+<li>aiken-lang/stdlib v2.1.0</li>
+</ul>
+<h2>Install</h2>
+<pre><code>
+# Install aikup
+npm install -g @aiken-lang/aikup
+
+# Run aikup
+aikup
+
+# Add Aiken to your PAHT
+export PATH="/home/manuelpadilla/.aiken/bin:$PATH"
+
+# Build the project
+aiken build
+
+# Run tests (when you have them)
+aiken check
+
+# Format ```
+aiken fmt
+
+# Generate documentation
+aiken docs
+
+# Check Aiken version
+aiken --version
+
+</code></pre>
+<h2>Smart Contract Components</h2>
+<h3>Protocol Contract</h3>
+<h4>Parameters</h4>
+<p>Parameters for the Protocol Contract and its Policy ID minting</p>
+<pre><code>type ProtocolParams {
+  /// OutputReference that must be consumed when minting the Protocol ID token
+  pp_protocol_policy_id_tx_out_ref: OutputReference,
+  /// Protocol ID token name that will be minted
+  pp_protocol_id_tn: ByteArray,
+}
+</code></pre>
+<h4>Protocol Datum Structure</h4>
+<p>Protocol Datum storing governance and configuration parameters</p>
+<pre><code>type ProtocolDatum {
+  /// List of payment verification key hashes that can perform administrative actions
+  pd_admins: List&lt;VerificationKeyHash&gt;,
+  /// Policy ID of the admin token that can also authorize administrative actions
+  pd_token_admin_policy_id: PolicyId,
+  /// MAYZ token policy ID
+  pd_mayz_policy_id: PolicyId,
+  /// MAYZ token name
+  pd_mayz_tn: ByteArray,
+  /// Required amount of $MAYZ tokens to be locked when creating an OTC position
+  pd_mayz_deposit_requirement: Int,
+  /// Minimum ADA required to be present in protocol UTXOs
+  pd_min_ada: Int
+
+}
+</code></pre>
+<h5>Field Descriptions</h5>
+<ol>
+<li>
+<p><strong>pd_admins</strong> (List<VerificationKeyHash>)</p>
+<ul>
+<li>Purpose: Stores the list of authorized administrator public key hashes</li>
+<li>Usage: Controls who can perform protocol administration tasks</li>
+<li>Validation: Used to verify administrative transactions</li>
+<li>Type: List of Cardano verification key hashes</li>
+<li>Note: Administrators can update protocol parameters and minimum ADA requirements</li>
+</ul>
+</li>
+<li>
+<p><strong>pd_token_admin_policy_id</strong> (PolicyId)</p>
+<ul>
+<li>Purpose: Identifies the policy of tokens that grant administrative privileges</li>
+<li>Usage: Allows token-based authorization for administrative actions</li>
+<li>Validation: Any transaction containing this admin token can perform admin actions</li>
+<li>Type: Cardano PolicyId (hash of the minting policy)</li>
+<li>Note: Provides an alternative to direct wallet-based admin authorization</li>
+</ul>
+</li>
+<li>
+<p><strong>pd_mayz_policy_id</strong> (PolicyId)</p>
+<ul>
+<li>MAYZ token policy ID</li>
+</ul>
+</li>
+<li>
+<p><strong>pd_mayz_tn</strong> (ByteArray)</p>
+<ul>
+<li>MAYZ token name</li>
+</ul>
+</li>
+<li>
+<p><strong>pd_mayz_deposit_requirement</strong> (Int)</p>
+<ul>
+<li>Purpose: Specifies the required amount of $MAYZ tokens for OTC creation</li>
+<li>Usage: Users must lock this amount when creating an OTC position</li>
+<li>Validation: Checked during OTC creation transactions</li>
+<li>Type: Integer representing token quantity</li>
+<li>Note: $MAYZ tokens are returned to creator after successful OTC completion</li>
+</ul>
+</li>
+<li>
+<p><strong>pd_min_ada</strong> (Int)</p>
+<ul>
+<li>Purpose: Defines minimum ADA required in protocol UTXOs</li>
+<li>Usage: Ensures sufficient ADA for transaction fees and UTXO minimum requirements</li>
+<li>Type: Integer representing lovelace amount</li>
+<li>Note: Can be updated by administrators based on network conditions</li>
+</ul>
+</li>
+</ol>
+<h4>Authorization Logic</h4>
+<p>Administrative actions can be performed in two ways:</p>
+<ol>
+<li>Direct wallet authorization: Transaction signed by a wallet whose payment verification key hash is in pd_admins</li>
+<li>Token-based authorization: Transaction includes a token from pd_token_admin_policy_id</li>
+</ol>
+<h4>Protocol Redeemers</h4>
+<p>Redeemers for the Protocol Contract</p>
+<pre><code>pub type ProtocolRedeemer {
+  /// Initialize protocol by minting Protocol ID token
+  CreateProtocol
+  /// Update protocol parameters while maintaining Protocol ID token
+  UpdateProtocolParams
+  /// Update minimum ADA requirement for protocol UTXOs
+  UpdateProtocolMinADA {
+    /// New minimum ADA value
+    new_min_ada: Int,
+  }
+}
+</code></pre>
+<h5>1. CreateProtocol</h5>
+<ul>
+<li>Purpose: Initialize protocol by minting Protocol ID token and creating protocol UTXO</li>
+<li>Transaction Structure:
+<ul>
+<li>Input: Referenced UTXO from protocol parameters</li>
+<li>Mint: Protocol ID token (amount: 1)</li>
+<li>Output: Protocol UTXO with Protocol ID token and Protocol Datum</li>
+</ul>
+</li>
+<li>Validations:
+<ul>
+<li>Protocol ID token mint amount must be exactly 1</li>
+<li>Referenced UTXO must be consumed in the transaction</li>
+<li>Output must contain valid Protocol Datum with initial parameters</li>
+<li>Output must contain the Protocol ID token</li>
+<li>Output must contain minimum ADA specified in Protocol Datum</li>
+</ul>
+</li>
+</ul>
+<h5>2. UpdateProtocolParams</h5>
+<ul>
+<li>Purpose: Update protocol parameters while maintaining Protocol ID token</li>
+<li>Transaction Structure:
+<ul>
+<li>Input: Protocol UTXO (identified by Protocol ID token)</li>
+<li>Output: Updated Protocol UTXO with Protocol ID token</li>
+</ul>
+</li>
+<li>Validations:
+<ul>
+<li>Authorization: Must be signed by admin wallet OR include admin token</li>
+<li>Single valid Protocol UTXO input (containing Protocol ID token)</li>
+<li>Single valid Protocol UTXO output (containing Protocol ID token)</li>
+<li>Only allowed parameter updates: pd_admins, pd_token_admin_policy_id and pd_mayz_deposit_requirement fields</li>
+<li>Must maintain same value (Protocol ID token + ADA) between input/output</li>
+</ul>
+</li>
+</ul>
+<h5>3. UpdateProtocolMinADA</h5>
+<ul>
+<li>Purpose: Update minimum ADA in protocol UTXO</li>
+<li>Transaction Structure:
+<ul>
+<li>Input: Protocol UTXO (identified by Protocol ID token)</li>
+<li>Output: Updated Protocol UTXO with Protocol ID token</li>
+</ul>
+</li>
+<li>Validations:
+<ul>
+<li>Authorization: Must be signed by admin wallet OR include admin token</li>
+<li>Single valid Protocol UTXO input (containing Protocol ID token)</li>
+<li>Single valid Protocol UTXO output (containing Protocol ID token)</li>
+<li>Only allowed update: minimum ADA field</li>
+<li>Output must contain updated minimum ADA amount</li>
+</ul>
+</li>
+</ul>
+<h3>OTC NFT Minting Policy</h3>
+<h4>Parameters</h4>
+<p>Parameters for the OTC NFT Minting Policy</p>
+<pre><code>type OTCNFTParams {
+  /// OutputReference to be consumed
+  pp_otc_nft_policy_id_tx_out_ref: OutputReference,
+  /// Reference to OTC validator for validation. It's also the OTC ID PolicyID
+  pp_otc_validator_hash: ValidatorHash,  
+  /// Protocol ID policy ID
+  pp_protocol_policy_id: PolicyId,
+  /// Protocol ID token name
+  pp_protocol_id_tn: ByteArray,
+  // OTC ID token name
+  pp_otc_id_tn: ByteArray,
+}
+</code></pre>
+<p>Each instance of the minting policy is unique due to its required OutputReference parameter.</p>
+<h4>Minting Policy Logic</h4>
+<p>The minting policy validates that:</p>
+<ul>
+<li>The OTC validator script is involved in the transaction</li>
+<li>The policy’s unique OutputReference is consumed during minting</li>
+<li>Protocol parameters are validated via reference input during minting</li>
+<li>OTC NFT token follows required format</li>
+<li>Token minting/burning operations match OTC contract operations</li>
+</ul>
+<p>Token Name Format:</p>
+<pre><code>"OTC-[TOKEN]-[AMOUNT]"
+Example: "OTC-LEND-1.50M"
+</code></pre>
+<h4>Minting Policy Redeemers</h4>
+<p>Redeemers for the OTC NFT Minting Policy</p>
+<pre><code>pub type NFTRedeemer {
+  /// Mint new OTC NFT token during position creation
+  Mint
+  /// Burn OTC NFT token during Close/Cancel
+  Burn
+}
+</code></pre>
+<h5>1. MintNFT</h5>
+<ul>
+<li>Purpose: Initialize OTC position by minting NFT ID token</li>
+<li>Transaction Structure:
+Same as <a href="#1-createotc">1. CreateOTC</a></li>
+<li>Validations:
+<ul>
+<li>OutputReference is consumed (ensures policy uniqueness)</li>
+<li>Exactly one OTC NFT and one OTC ID token minted</li>
+<li>Must occur in same transaction as OTC Contract CreateOTC</li>
+<li>Token names follow correct format</li>
+<li>OTC NFT token details match OTC datum</li>
+</ul>
+</li>
+</ul>
+<h5>2. BurnNFT</h5>
+<ul>
+<li>Purpose: Burn OTC NFT token during CloseOTC or CancelOTC operations</li>
+<li>Transaction Structure:</li>
+<li>Same as <a href="#2-closeotc">2. CloseOTC</a> or <a href="#3-cancelotc">3. CancelOTC</a></li>
+<li>Validations:
+<ul>
+<li>Exactly one OTC NFT and one OTC ID token burned</li>
+<li>Must occur in same transaction as OTC Contract CloseOTC or CancelOTC</li>
+<li>Proper OTC validator involvement</li>
+</ul>
+</li>
+</ul>
+<h3>OTC Contract</h3>
+<p>Parameters for the OTC Validator and NFT ID Policy</p>
+<h4>Parameters</h4>
+<pre><code>type OTCParams {
+  /// Protocol ID policy ID
+  pp_protocol_policy_id: PolicyId,
+  /// Protocol ID token name
+  pp_protocol_id_tn: ByteArray,
+  /// OTC ID token name
+  pp_otc_id_tn: ByteArray,
+}
+</code></pre>
+<h4>OTC Datum Structure</h4>
+<p>Datum for OTC positions storing state and configuration</p>
+<pre><code>type OTCDatum {
+  /// Payment verification key hash of the OTC position creator
+  od_creator: VerificationKeyHash,
+  /// Policy ID of the underlying tokens to be locked
+  od_token_policy_id: PolicyId,
+  /// Token name of the underlying tokens to be locked
+  od_token_tn: ByteArray,
+  /// Amount of underlying tokens locked in the OTC position
+  od_token_amount: Int,
+  /// Policy ID of the OTC NFT token minted for this position
+  od_otc_nft_policy_id: PolicyId,
+  /// Name of the OTC NFT token following naming convention
+  od_otc_nft_tn: ByteArray,
+  /// MAYZ token policy ID
+  od_mayz_policy_id: PolicyId,
+  /// MAYZ token name
+  od_mayz_tn: ByteArray,
+  /// Amount of $MAYZ Token locked as deposit for this OTC position
+  od_mayz_locked: Int,
+  /// Minimum ADA required to be present in the OTC UTXO
+  od_min_ada: Int,
+}
+</code></pre>
+<p>MAYZ token fields are stored in datum to maintain version consistency throughout the lifetime of the OTC position, even if protocol updates these values later</p>
+<h5>Field Descriptions</h5>
+<ol>
+<li>
+<p><strong>od_creator</strong> (VerificationKeyHash)</p>
+<ul>
+<li>Purpose: Identifies the creator of the OTC position</li>
+<li>Usage: Used to verify authorization for Close and Cancel operations</li>
+<li>Validation: Must match transaction signer for administrative actions</li>
+<li>Type: Cardano verification key hash</li>
+<li>Note: Only this address can retrieve $MAYZ Token deposit or cancel position</li>
+</ul>
+</li>
+<li>
+<p><strong>od_token_policy_id</strong> (PolicyId)</p>
+<ul>
+<li>Purpose: Identifies the policy of the underlying tokens being locked</li>
+<li>Usage: Used to verify correct tokens during Create and Claim operations</li>
+<li>Validation: Must match the tokens being locked in Create operation</li>
+<li>Type: Cardano PolicyId (hash of the minting policy)</li>
+</ul>
+</li>
+<li>
+<p><strong>od_token_tn</strong> (ByteArray)</p>
+<ul>
+<li>Purpose: Specifies the name of the underlying tokens being locked</li>
+<li>Usage: Combined with policy ID to uniquely identify locked tokens</li>
+<li>Validation: Must match the token name of locked assets</li>
+<li>Type: ByteArray representing token name</li>
+</ul>
+</li>
+<li>
+<p><strong>od_token_amount</strong> (Int)</p>
+<ul>
+<li>Purpose: Specifies the quantity of underlying tokens locked</li>
+<li>Usage: Ensures correct amount during Create and Claim operations</li>
+<li>Validation: Must match actual locked token amount</li>
+<li>Type: Integer representing token quantity</li>
+</ul>
+</li>
+<li>
+<p><strong>od_otc_nft_policy_id</strong> (PolicyId)</p>
+<ul>
+<li>Purpose: Identifies the policy ID of the OTC NFT token</li>
+<li>Usage: Used to verify the correct OTC NFT token during operations</li>
+<li>Validation: Must match the policy ID of minted OTC NFT token</li>
+<li>Type: Cardano PolicyId</li>
+</ul>
+</li>
+<li>
+<p><strong>od_otc_nft_tn</strong> (ByteArray)</p>
+<ul>
+<li>Purpose: Stores the name of the OTC NFT token</li>
+<li>Usage: Used to identify and validate the specific OTC NFT token</li>
+<li>Validation: Must follow naming convention “OTC-[TOKEN]-[AMOUNT]”</li>
+<li>Type: ByteArray representing token name</li>
+<li>Example: “OTC-LEND-1.50M”</li>
+</ul>
+</li>
+<li>
+<p><strong>od_mayz_policy_id</strong>: PolicyId,</p>
+</li>
+</ol>
+<ul>
+<li>Purpose: Stores the MAYZ token policy ID</li>
+<li>Type: Cardano PolicyId</li>
+</ul>
+<ol start="8">
+<li><strong>od_mayz_tn</strong>: ByteArray,</li>
+</ol>
+<ul>
+<li>Purpose: Stores the MAYZ token name</li>
+<li>Type: ByteArray representing token name</li>
+</ul>
+<ol start="9">
+<li>
+<p><strong>od_mayz_locked</strong> (Int)</p>
+<ul>
+<li>Purpose: Records amount of $MAYZ Token locked as deposit</li>
+<li>Usage: Ensures correct deposit amount is maintained</li>
+<li>Validation: Must match protocol’s required deposit amount</li>
+<li>Type: Integer representing $MAYZ Token quantity</li>
+<li>Note: Retrieved by creator after successful completion or cancellation</li>
+</ul>
+</li>
+<li>
+<p><strong>od_min_ada</strong> (Int)</p>
+</li>
+</ol>
+<ul>
+<li>Purpose: Defines minimum ADA required in OTC UTXO</li>
+<li>Usage: Ensures sufficient ADA for transaction fees and UTXO requirements</li>
+<li>Type: Integer representing lovelace amount</li>
+<li>Note: Returned to creator along with other assets</li>
+</ul>
+<h4>OTC Redeemers</h4>
+<p>Redeemers for the OTC Contract</p>
+<pre><code>/// Redeemers for the OTC Contract
+pub type OTCRedeemer {
+  /// Create new OTC position and mint OTC ID token
+  CreateOTC
+  /// Claim underlying tokens using OTC NFT
+  ClaimOTC
+  /// Close completed position and retrieve MAYZ deposit
+  CloseOTC
+  /// Cancel active position and retrieve all assets
+  CancelOTC
+  /// Update minimum ADA requirement for OTC UTXO
+  UpdateOTCMinADA {
+    /// New minimum ADA value 
+    new_min_ada: Int,
+  }
+}
+</code></pre>
+<h5>1. CreateOTC</h5>
+<ul>
+<li>Purpose: Initialize OTC position by minting OTC ID token and locking assets</li>
+<li>Transaction Structure:
+<ul>
+<li>Reference Input: Protocol UTXO (for parameter validation)</li>
+<li>Mint: OTC ID token (amount: 1) and OTC NFT token (amount: 1)</li>
+<li>Output 1: OTC UTXO containing:
+<ul>
+<li>OTC ID token</li>
+<li>Underlying tokens</li>
+<li>$MAYZ Token deposit</li>
+<li>Minimum ADA</li>
+<li>Proper OTC datum with minted token details</li>
+</ul>
+</li>
+<li>Output 2: OTC NFT token to creator address</li>
+</ul>
+</li>
+<li>Validations:
+<ul>
+<li>Exactly one OTC NFT and one OTC ID token minted</li>
+<li>Single valid OTC UTXO output with required assets</li>
+<li>Required $MAYZ Token deposit matches Protocol Datum</li>
+<li>Output datum contains correct OTC datum</li>
+<li>OTC NFT token sent to creator</li>
+</ul>
+</li>
+</ul>
+<h5>1. ClaimOTC</h5>
+<ul>
+<li>Purpose: Redeem underlying tokens using OTC NFT token</li>
+<li>Transaction Structure:
+<ul>
+<li>Input 1: User UTXO with OTC NFT token</li>
+<li>Input 2: OTC UTXO (identified by OTC ID token)</li>
+<li>Output 1: Updated OTC UTXO retaining $MAYZ Token deposit</li>
+<li>Output 2: Underlying tokens to claimer</li>
+</ul>
+</li>
+<li>Validations:
+<ul>
+<li>Single valid OTC input (containing OTC ID token)</li>
+<li>Single valid OTC output (containing OTC ID token)</li>
+<li>OTC NFT token present in transaction input</li>
+<li>Output maintains $MAYZ Token deposit, minimum ADA, and OTC ID token and add the OTC NFT token</li>
+<li>Underlying tokens transferred to transaction signer</li>
+</ul>
+</li>
+</ul>
+<h5>2. CloseOTC</h5>
+<ul>
+<li>Purpose: Close completed OTC position and retrieve $MAYZ Token deposit</li>
+<li>Transaction Structure:
+<ul>
+<li>Input: OTC UTXO (identified by OTC ID token) with OTC NFT token</li>
+<li>Burn: OTC ID token and OTC NFT token</li>
+<li>Output: $MAYZ Token and ADA to creator</li>
+</ul>
+</li>
+<li>Validations:
+<ul>
+<li>Single valid OTC input (containing OTC ID token)</li>
+<li>No OTC ID token in outputs</li>
+<li>OTC NFT token present in input OTC UTXO</li>
+<li>OTC ID token and OTC NFT token are burned</li>
+<li>Transaction signed by original creator</li>
+<li>$MAYZ Token deposit and minimum ADA returned to creator</li>
+</ul>
+</li>
+</ul>
+<h5>3. CancelOTC</h5>
+<ul>
+<li>Purpose: Cancel active OTC position and retrieve all assets</li>
+<li>Transaction Structure:
+<ul>
+<li>Input 1: User UTXO with OTC NFT token</li>
+<li>Input 2: OTC UTXO (identified by OTC ID token)</li>
+<li>Burn: OTC ID token and OTC NFT token</li>
+<li>Output: All assets to creator</li>
+</ul>
+</li>
+<li>Validations:
+<ul>
+<li>Single valid OTC input (containing OTC ID token)</li>
+<li>No OTC ID token in outputs</li>
+<li>OTC NFT token present in transaction input</li>
+<li>OTC ID token and OTC NFT token are burned</li>
+<li>Transaction signed by original creator</li>
+<li>All assets ($MAYZ Token, underlying tokens, minimum ADA) returned to creator</li>
+</ul>
+</li>
+</ul>
+<h5>4. UpdateOTCMinADA</h5>
+<ul>
+<li>Purpose: Update minimum ADA in OTC UTXO</li>
+<li>Transaction Structure:
+<ul>
+<li>Input: OTC UTXO (identified by OTC ID token)</li>
+<li>Output: Updated OTC UTXO with OTC ID token</li>
+</ul>
+</li>
+<li>Validations:
+<ul>
+<li>Authorization: Must be signed by creator wallet</li>
+<li>Single valid OTC UTXO input (containing OTC ID token)</li>
+<li>Single valid OTC UTXO output (containing OTC ID token)</li>
+<li>Only allowed update: minimum ADA field</li>
+<li>Output must contain updated minimum ADA amount</li>
+</ul>
+</li>
+</ul>
+<h2>Token Flow and Interactions</h2>
+<h3>Token Standards</h3>
+<ul>
+<li>OTC NFT Naming Convention: “OTC-[TOKEN]-[AMOUNT]”
+Example: “OTC-LEND-1.50M” for 1,500,000 LEND tokens</li>
+<li>Each OTC position has two associated tokens:
+<ol>
+<li>OTC ID token: Always stays at validator script, identifies position</li>
+<li>OTC NFT token: Tradeable token representing position rights</li>
+</ol>
+</li>
+<li>Both tokens are always minted and burned together</li>
+<li>Policy uniqueness ensured by OutputReference parameter</li>
+<li>Each new OTC position requires a new minting policy instance</li>
+</ul>
+<h3>Creation Flow</h3>
+<ol>
+<li>User deposits underlying tokens + MAYZ tokens</li>
+<li>New OTC NFT minting policy instance is created (unique per position)</li>
+<li>OTC Contract mints OTC ID token</li>
+<li>MAYZ token details from protocol are stored in position datum</li>
+<li>OTC NFT token sent to creator</li>
+<li>Underlying tokens locked in contract</li>
+</ol>
+<h3>Redemption Flow</h3>
+<ol>
+<li>OTC NFT holder initiates claim</li>
+<li>Contract verifies OTC NFT</li>
+<li>Underlying tokens released to claimer</li>
+<li>MAYZ deposit, OTC ID token and OTC NFT token remain locked</li>
+</ol>
+<h3>Closing Flow</h3>
+<ol>
+<li>Creator initiates close after successful claim</li>
+<li>OTC Contract burns OTC ID token</li>
+<li>OTC NFT policy burns NFT token</li>
+<li>MAYZ deposit returned to creator</li>
+</ol>
+<h3>Cancellation Flow</h3>
+<ol>
+<li>Creator initiates cancellation</li>
+<li>OTC Contract burns OTC ID token</li>
+<li>OTC NFT policy burns NFT token</li>
+<li>All locked assets returned to creator</li>
+</ol>
+<h2>Transaction Diagrams</h2>
+<p>The following transaction diagrams provide a visual breakdown of key operations in the OTC smart contract system:</p>
+<ol>
+<li>
+<p><strong>Protocol Creation</strong>: Establishes protocol governance parameters and mints the Protocol ID token.
+<br>
+<img src="../smart-contracts/charts/Protocol-Create-Tx.png" width="800px"></p>
+</li>
+<li>
+<p><strong>Protocol Update - Minimum ADA</strong>: Updates the minimum ADA requirement for protocol UTXOs.
+<br>
+<img src="../smart-contracts/charts/Protocol-Update-MinADA-Tx.png" width="800px"></p>
+</li>
+<li>
+<p><strong>Protocol Update - Parameters</strong>: Modifies the protocol’s administrative parameters such as admin lists or deposit requirements.
+<br>
+<img src="../smart-contracts/charts/Protocol-Update-Params-Tx.png" width="800px"></p>
+</li>
+<li>
+<p><strong>OTC Creation</strong>: Enables users to lock tokens and receive an OTC NFT, representing ownership of the underlying assets.
+<br>
+<img src="../smart-contracts/charts/OTC-Create-Tx.png" width="800px"></p>
+</li>
+<li>
+<p><strong>OTC Update - Minimum ADA</strong>: Updates the minimum ADA requirement specifically for OTC UTXOs.
+<br>
+<img src="../smart-contracts/charts/OTC-Update-MinADA-Tx.png" width="800px"></p>
+</li>
+<li>
+<p><strong>OTC Claiming</strong>: Allows an OTC NFT holder to redeem the underlying tokens.
+<br>
+<img src="../smart-contracts/charts/OTC-Claim-Tx.png" width="800px"></p>
+</li>
+<li>
+<p><strong>OTC Closing</strong>: Closes an OTC position and returns the deposited ADA or MAYZ tokens to the creator after a successful claim.
+<br>
+<img src="../smart-contracts/charts/OTC-Close-Tx.png" width="800px"></p>
+</li>
+<li>
+<p><strong>OTC Cancellation</strong>: Cancels an active OTC position, retrieving all locked assets back to the creator.
+<br>
+<img src="../smart-contracts/charts/OTC-Cancel-Tx.png" width="800px"></p>
+</li>
+</ol>
+<h2>Security Considerations</h2>
+<ol>
+<li>Token Validation</li>
+</ol>
+<ul>
+<li>Strict verification of token policies</li>
+<li>Amount validation for all token operations</li>
+<li>Proper burning verification</li>
+</ul>
+<ol start="2">
+<li>Authorization</li>
+</ol>
+<ul>
+<li>Creator-only operations for close/cancel</li>
+<li>Admin-only protocol updates</li>
+<li>Token-based authorization checks</li>
+</ul>
+<ol start="3">
+<li>Value Preservation</li>
+</ol>
+<ul>
+<li>Input/output value matching</li>
+<li>Minimum ADA requirements</li>
+<li>Proper token allocation</li>
+</ul>
+<ol start="4">
+<li>Policy Uniqueness</li>
+</ol>
+<ul>
+<li>Each OTC NFT minting policy instance is unique due to OutputReference parameter</li>
+<li>OutputReference must be consumed during minting</li>
+<li>This prevents token name collisions across different OTC positions</li>
+<li>Even if two positions have identical token amounts, they’ll have different policy IDs</li>
+</ul>
+<ol start="5">
+<li>Version Control</li>
+</ol>
+<ul>
+<li>MAYZ token details stored in OTC datum</li>
+<li>Protects positions from unexpected protocol updates</li>
+<li>Ensures consistent token validation throughout position lifecycle</li>
+</ul>
+<h2>Metadata Handling</h2>
+<p>Additional token metadata is included during minting transactions:</p>
+<ul>
+<li>Underlying token details</li>
+<li>Amount representations</li>
+<li>Creator information</li>
+<li>Timestamp data</li>
+</ul>
+
+
+      </main>
+      <div class="search-overlay"></div>
+    </div>
+
+    <svg class="svg-lib" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <defs>
+        <symbol id="icon-chevrons-down" viewBox="0 0 24 24"><path d="M6.293 13.707l5 5c0.391 0.391 1.024 0.391 1.414 0l5-5c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-4.293 4.293-4.293-4.293c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414zM6.293 6.707l5 5c0.391 0.391 1.024 0.391 1.414 0l5-5c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-4.293 4.293-4.293-4.293c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414z"></path></symbol>
+
+        <symbol id="icon-menu" viewBox="0 0 24 24"><path d="M3 13h18c0.552 0 1-0.448 1-1s-0.448-1-1-1h-18c-0.552 0-1 0.448-1 1s0.448 1 1 1zM3 7h18c0.552 0 1-0.448 1-1s-0.448-1-1-1h-18c-0.552 0-1 0.448-1 1s0.448 1 1 1zM3 19h18c0.552 0 1-0.448 1-1s-0.448-1-1-1h-18c-0.552 0-1 0.448-1 1s0.448 1 1 1z"></path></symbol>
+
+	<symbol id="icon-external-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-external-link"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></symbol>
+
+        <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M21.996 12.882c0.022-0.233-0.038-0.476-0.188-0.681-0.325-0.446-0.951-0.544-1.397-0.219-0.95 0.693-2.060 1.086-3.188 1.162-1.368 0.092-2.765-0.283-3.95-1.158-1.333-0.985-2.139-2.415-2.367-3.935s0.124-3.124 1.109-4.456c0.142-0.191 0.216-0.435 0.191-0.691-0.053-0.55-0.542-0.952-1.092-0.898-2.258 0.22-4.314 1.18-5.895 2.651-1.736 1.615-2.902 3.847-3.137 6.386-0.254 2.749 0.631 5.343 2.266 7.311s4.022 3.313 6.772 3.567 5.343-0.631 7.311-2.266 3.313-4.022 3.567-6.772zM19.567 14.674c-0.49 1.363-1.335 2.543-2.416 3.441-1.576 1.309-3.648 2.016-5.848 1.813s-4.108-1.278-5.417-2.854-2.016-3.648-1.813-5.848c0.187-2.032 1.117-3.814 2.507-5.106 0.782-0.728 1.71-1.3 2.731-1.672-0.456 1.264-0.577 2.606-0.384 3.899 0.303 2.023 1.38 3.934 3.156 5.247 1.578 1.167 3.448 1.668 5.272 1.545 0.752-0.050 1.496-0.207 2.21-0.465z"></path></symbol>
+
+        <symbol id="icon-more-horizontal" viewBox="0 0 24 24"><path d="M14 12c0-0.552-0.225-1.053-0.586-1.414s-0.862-0.586-1.414-0.586-1.053 0.225-1.414 0.586-0.586 0.862-0.586 1.414 0.225 1.053 0.586 1.414 0.862 0.586 1.414 0.586 1.053-0.225 1.414-0.586 0.586-0.862 0.586-1.414zM21 12c0-0.552-0.225-1.053-0.586-1.414s-0.862-0.586-1.414-0.586-1.053 0.225-1.414 0.586-0.586 0.862-0.586 1.414 0.225 1.053 0.586 1.414 0.862 0.586 1.414 0.586 1.053-0.225 1.414-0.586 0.586-0.862 0.586-1.414zM7 12c0-0.552-0.225-1.053-0.586-1.414s-0.862-0.586-1.414-0.586-1.053 0.225-1.414 0.586-0.586 0.862-0.586 1.414 0.225 1.053 0.586 1.414 0.862 0.586 1.414 0.586 1.053-0.225 1.414-0.586 0.586-0.862 0.586-1.414z"></path></symbol>
+
+        <symbol id="icon-more-vertical" viewBox="0 0 24 24"><path d="M14 12c0-0.552-0.225-1.053-0.586-1.414s-0.862-0.586-1.414-0.586-1.053 0.225-1.414 0.586-0.586 0.862-0.586 1.414 0.225 1.053 0.586 1.414 0.862 0.586 1.414 0.586 1.053-0.225 1.414-0.586 0.586-0.862 0.586-1.414zM14 5c0-0.552-0.225-1.053-0.586-1.414s-0.862-0.586-1.414-0.586-1.053 0.225-1.414 0.586-0.586 0.862-0.586 1.414 0.225 1.053 0.586 1.414 0.862 0.586 1.414 0.586 1.053-0.225 1.414-0.586 0.586-0.862 0.586-1.414zM14 19c0-0.552-0.225-1.053-0.586-1.414s-0.862-0.586-1.414-0.586-1.053 0.225-1.414 0.586-0.586 0.862-0.586 1.414 0.225 1.053 0.586 1.414 0.862 0.586 1.414 0.586 1.053-0.225 1.414-0.586 0.586-0.862 0.586-1.414z"></path></symbol>
+
+        <symbol id="icon-sun" viewBox="0 0 24 24"><path d="M18 12c0-1.657-0.673-3.158-1.757-4.243s-2.586-1.757-4.243-1.757-3.158 0.673-4.243 1.757-1.757 2.586-1.757 4.243 0.673 3.158 1.757 4.243 2.586 1.757 4.243 1.757 3.158-0.673 4.243-1.757 1.757-2.586 1.757-4.243zM16 12c0 1.105-0.447 2.103-1.172 2.828s-1.723 1.172-2.828 1.172-2.103-0.447-2.828-1.172-1.172-1.723-1.172-2.828 0.447-2.103 1.172-2.828 1.723-1.172 2.828-1.172 2.103 0.447 2.828 1.172 1.172 1.723 1.172 2.828zM11 1v2c0 0.552 0.448 1 1 1s1-0.448 1-1v-2c0-0.552-0.448-1-1-1s-1 0.448-1 1zM11 21v2c0 0.552 0.448 1 1 1s1-0.448 1-1v-2c0-0.552-0.448-1-1-1s-1 0.448-1 1zM3.513 4.927l1.42 1.42c0.391 0.391 1.024 0.391 1.414 0s0.391-1.024 0-1.414l-1.42-1.42c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414zM17.653 19.067l1.42 1.42c0.391 0.391 1.024 0.391 1.414 0s0.391-1.024 0-1.414l-1.42-1.42c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414zM1 13h2c0.552 0 1-0.448 1-1s-0.448-1-1-1h-2c-0.552 0-1 0.448-1 1s0.448 1 1 1zM21 13h2c0.552 0 1-0.448 1-1s-0.448-1-1-1h-2c-0.552 0-1 0.448-1 1s0.448 1 1 1zM4.927 20.487l1.42-1.42c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-1.42 1.42c-0.391 0.391-0.391 1.024 0 1.414s1.024 0.391 1.414 0zM19.067 6.347l1.42-1.42c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-1.42 1.42c-0.391 0.391-0.391 1.024 0 1.414s1.024 0.391 1.414 0z"></path></symbol>
+
+        <symbol id="icon-toggle-left" viewBox="0 0 24 24"><path d="M8 4c-2.209 0-4.21 0.897-5.657 2.343s-2.343 3.448-2.343 5.657 0.897 4.21 2.343 5.657 3.448 2.343 5.657 2.343h8c2.209 0 4.21-0.897 5.657-2.343s2.343-3.448 2.343-5.657-0.897-4.21-2.343-5.657-3.448-2.343-5.657-2.343zM8 6h8c1.657 0 3.156 0.67 4.243 1.757s1.757 2.586 1.757 4.243-0.67 3.156-1.757 4.243-2.586 1.757-4.243 1.757h-8c-1.657 0-3.156-0.67-4.243-1.757s-1.757-2.586-1.757-4.243 0.67-3.156 1.757-4.243 2.586-1.757 4.243-1.757zM12 12c0-1.104-0.449-2.106-1.172-2.828s-1.724-1.172-2.828-1.172-2.106 0.449-2.828 1.172-1.172 1.724-1.172 2.828 0.449 2.106 1.172 2.828 1.724 1.172 2.828 1.172 2.106-0.449 2.828-1.172 1.172-1.724 1.172-2.828zM10 12c0 0.553-0.223 1.051-0.586 1.414s-0.861 0.586-1.414 0.586-1.051-0.223-1.414-0.586-0.586-0.861-0.586-1.414 0.223-1.051 0.586-1.414 0.861-0.586 1.414-0.586 1.051 0.223 1.414 0.586 0.586 0.861 0.586 1.414z"></path></symbol>
+
+        <symbol id="icon-toggle-right" viewBox="0 0 24 24"><path d="M8 4c-2.209 0-4.21 0.897-5.657 2.343s-2.343 3.448-2.343 5.657 0.897 4.21 2.343 5.657 3.448 2.343 5.657 2.343h8c2.209 0 4.21-0.897 5.657-2.343s2.343-3.448 2.343-5.657-0.897-4.21-2.343-5.657-3.448-2.343-5.657-2.343zM8 6h8c1.657 0 3.156 0.67 4.243 1.757s1.757 2.586 1.757 4.243-0.67 3.156-1.757 4.243-2.586 1.757-4.243 1.757h-8c-1.657 0-3.156-0.67-4.243-1.757s-1.757-2.586-1.757-4.243 0.67-3.156 1.757-4.243 2.586-1.757 4.243-1.757zM20 12c0-1.104-0.449-2.106-1.172-2.828s-1.724-1.172-2.828-1.172-2.106 0.449-2.828 1.172-1.172 1.724-1.172 2.828 0.449 2.106 1.172 2.828 1.724 1.172 2.828 1.172 2.106-0.449 2.828-1.172 1.172-1.724 1.172-2.828zM18 12c0 0.553-0.223 1.051-0.586 1.414s-0.861 0.586-1.414 0.586-1.051-0.223-1.414-0.586-0.586-0.861-0.586-1.414 0.223-1.051 0.586-1.414 0.861-0.586 1.414-0.586 1.051 0.223 1.414 0.586 0.586 0.861 0.586 1.414z"></path></symbol>
+
+        <symbol id="icon-x-circle" viewBox="0 0 24 24"><path d="M23 12c0-3.037-1.232-5.789-3.222-7.778s-4.741-3.222-7.778-3.222-5.789 1.232-7.778 3.222-3.222 4.741-3.222 7.778 1.232 5.789 3.222 7.778 4.741 3.222 7.778 3.222 5.789-1.232 7.778-3.222 3.222-4.741 3.222-7.778zM21 12c0 2.486-1.006 4.734-2.636 6.364s-3.878 2.636-6.364 2.636-4.734-1.006-6.364-2.636-2.636-3.878-2.636-6.364 1.006-4.734 2.636-6.364 3.878-2.636 6.364-2.636 4.734 1.006 6.364 2.636 2.636 3.878 2.636 6.364zM8.293 9.707l2.293 2.293-2.293 2.293c-0.391 0.391-0.391 1.024 0 1.414s1.024 0.391 1.414 0l2.293-2.293 2.293 2.293c0.391 0.391 1.024 0.391 1.414 0s0.391-1.024 0-1.414l-2.293-2.293 2.293-2.293c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-2.293 2.293-2.293-2.293c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414z"></path></symbol>
+
+        <symbol id="icon-svg-search" viewBox="0 0 24 24">
+            <title>Search</title>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
+                <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+        </symbol>
+
+        <symbol id="icon-svg-doc" viewBox="0 0 24 24">
+            <title>Document</title>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file">
+                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline>
+            </svg>
+        </symbol>
+	<symbol id="icon-at" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-at-sign">
+	  <circle cx="12" cy="12" r="4"></circle>
+	  <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"></path>
+	</symbol>
+	<symbol id="icon-box" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-box">
+	  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+	  <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+	  <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </symbol>
+
+	<symbol id="icon-note" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path>
+	</symbol>
+
+	<symbol id="icon-tip" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path>
+	</symbol>
+
+	<symbol id="icon-important" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path>
+	</symbol>
+
+	<symbol id="icon-warning" viewBox="0 0 16 16" fill="currentColor">
+	  <path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path>
+	</symbol>
+
+	<symbol id="icon-caution" viewBox="0 0 16 16" fill="currentColor">
+	  <path d="M4.47.22A.749.749 0 0 1 5 0h6c.199 0 .389.079.53.22l4.25 4.25c.141.14.22.331.22.53v6a.749.749 0 0 1-.22.53l-4.25 4.25A.749.749 0 0 1 11 16H5a.749.749 0 0 1-.53-.22L.22 11.53A.749.749 0 0 1 0 11V5c0-.199.079-.389.22-.53Zm.84 1.28L1.5 5.31v5.38l3.81 3.81h5.38l3.81-3.81V5.31L10.69 1.5ZM8 4a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path>
+	</symbol>
+
+
+
+
+      </defs>
+    </svg>
+
+    <script src="./js/highlight.min.js?v=1.1.5"></script>
+    <script src="./js/highlightjs-aiken.js?v=1.1.5"></script>
+    <script>
+      document.querySelectorAll("pre code").forEach((elem) => {
+        if (elem.className === "") {
+          elem.classList.add("aiken");
+        }
+      });
+      hljs.highlightAll();
+      document.querySelectorAll(".member-name > h2 > pre").forEach((el) => {
+	hljs.highlightElement(el)
+	const span = el.firstElementChild;
+	span.remove();
+	const a = document.createElement("a");
+	a.href = `#${span.innerText}`;
+	a.className = span.className;
+	a.innerText = span.innerText;
+	el.prepend(a);
+      });
+
+      function addIcon(icon) {
+	return (el) => {
+	  const span = document.createElement('span');
+	  span.classList = 'icon-group';
+	  span.innerText = icon;
+	  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+	  svg.classList = 'icon';
+	  const link = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+	  link.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', `#icon-${icon}`);
+	  svg.appendChild(link);
+	  span.prepend(svg)
+	  el.prepend(span);
+	}
+      }
+
+      document.querySelectorAll("blockquote.markdown-alert-note").forEach(addIcon('note'));
+      document.querySelectorAll("blockquote.markdown-alert-tip").forEach(addIcon('tip'));
+      document.querySelectorAll("blockquote.markdown-alert-important").forEach(addIcon('important'));
+      document.querySelectorAll("blockquote.markdown-alert-warning").forEach(addIcon('warning'));
+      document.querySelectorAll("blockquote.markdown-alert-caution").forEach(addIcon('caution'));
+    </script>
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+    <script src="./js/lunr.min.js?v=1.1.5"></script>
+    <script src="./js/index.js?v=1731190850"></script>
+    <!-- Load the search index using JSONP to avoid CORS issues -->
+    <script src="./search-data.js?v=1731190850"></script>
+    <script>
+      void function() {
+        if (typeof tippy !== "undefined") {
+	  const overflowed = Array.from(document
+            .querySelectorAll('.sidebar li:not([data-indent])'))
+	    .filter(x => x.offsetWidth < x.scrollWidth);
+
+	  tippy(overflowed, {
+	    arrow: true,
+  	    placement: 'right',
+	    content: (el) => el.children[0]?.innerText,
+          });
+
+	  tippy('.sidebar li[data-indent] a', {
+	    arrow: true,
+  	    placement: 'right',
+	    content: (el) => el
+	      .getAttribute('href')
+	      .replaceAll(/\.?\.\//g, '')
+	      .replace('.html', ''),
+	  });
+	}
+      }();
+    </script>
+  </body>
+</html>

@@ -590,7 +590,7 @@ The following transaction diagrams provide a visual breakdown of key operations 
 - This prevents token name collisions across different OTC positions
 - Even if two positions have identical token amounts, they'll have different policy IDs
   
-1. Version Control
+5. Version Control
 - MAYZ token details stored in OTC datum
 - Protects positions from unexpected protocol updates
 - Ensures consistent token validation throughout position lifecycle
