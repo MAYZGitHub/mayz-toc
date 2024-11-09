@@ -1,0 +1,31 @@
+flowchart LR
+    Creator["<b>OTC Creator</b><br>------<br><font size='2'>Closes completed OTC</font><br>------<br><font size='2'>[Creator signature]</font>"]
+    
+    OTCIn["<b>OTC Validator</b><br>------<br><font size='2'>[1 OTC ID, 1 OTC NFT, MAYZ tokens]</font><br>------<br><font size='2'>OTC Datum</font>"]
+    
+    Burn(("<b>Burn</b><br><font color='red' size='2'>-1 OTC ID,</font><br><font color='red' size='2'>-1 OTC NFT</font>"))
+    
+    ScriptOTC["<b>OTC Validator</b> (CloseOTC)"]@{shape: lean-r}
+    ScriptNFT["<b>OTC NFT Policy</b> (BurnNFT)"]@{shape: lean-r}
+    
+    CloseTx["<b>Close OTC TX</b><br>----<br><font size='2'>Retrieve MAYZ deposit and burn tokens</font>"]
+    
+    Creator --> CloseTx
+    OTCIn --> CloseTx
+    Burn --> CloseTx
+    ScriptOTC --> CloseTx
+    ScriptNFT --> CloseTx
+    
+    CloseTx --> CreatorOut["<b>OTC Creator</b><br>------<br><font size='2'>Change output</font><br>------<br><font size='2'>[<font color='red'>+MAYZ tokens, +ADA</font>]</font>"]
+
+    Creator:::utxoBox
+    OTCIn:::utxoBox
+    CreatorOut:::utxoBox
+    CloseTx:::txBox 
+    
+    classDef utxoBox fill:#dffcff,stroke:#333,stroke-width:2px,rx:15,ry:15
+    classDef txBox fill:#f5f5f5,stroke:#333,stroke-width:2px
+    classDef scriptBox fill:white,stroke:#333,stroke-width:2px
+    style ScriptOTC fill:white,stroke:#333,stroke-width:2px
+    style ScriptNFT fill:white,stroke:#333,stroke-width:2px
+    style Burn fill:#ffffdf,stroke:#333,stroke-width:2px,rx:50

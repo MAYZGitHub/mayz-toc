@@ -1,0 +1,27 @@
+flowchart LR
+    Creator["<b>OTC Creator</b><br>------<br><font size='2'>Updates min ADA</font><br>------<br><font size='2'>[Creator signature, ADA]</font>"]
+    
+    OTCIn["<b>OTC Validator</b><br>------<br><font size='2'>[1 OTC ID, Tokens locked, MAYZ tokens]</font><br>------<br><font size='2'>OTC Datum</font>"]
+    
+    ScriptOTC["<b>OTC Validator</b> (UpdateOTCMinADA)"]@{shape: lean-r}
+    
+    UpdateTx["<b>Update OTC MinADA TX</b><br>----<br><font size='2'>Modify minimum ADA requirement</font>"]
+    
+    Creator --> UpdateTx
+    OTCIn --> UpdateTx
+    ScriptOTC --> UpdateTx
+    
+    UpdateTx --> CreatorOut["<b>OTC Creator</b><br>------<br><font size='2'>Change output</font><br>------<br><font size='2'>[<font color='red'>±ADA</font>]</font>"]
+    
+    UpdateTx --> OTCOut["<b>OTC Validator</b><br>------<br><font size='2'>[1 OTC ID, Tokens locked, MAYZ tokens, <font color='red'>±ADA</font>]</font><br>------<br><font size='2'><font color='red'>Updated OTC Datum</font></font>"]
+
+    Creator:::utxoBox
+    OTCIn:::utxoBox
+    CreatorOut:::utxoBox
+    UpdateTx:::txBox 
+    OTCOut:::utxoBox
+    
+    classDef utxoBox fill:#dffcff,stroke:#333,stroke-width:2px,rx:15,ry:15
+    classDef txBox fill:#f5f5f5,stroke:#333,stroke-width:2px
+    classDef scriptBox fill:white,stroke:#333,stroke-width:2px
+    style ScriptOTC fill:white,stroke:#333,stroke-width:2px

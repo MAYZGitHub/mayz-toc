@@ -1,0 +1,27 @@
+flowchart LR
+    Creator["<b>Protocol Admin</b><br>------<br><font size='2'>Initializes protocol with parameters</font><br>------<br><font size='2'>[ADA]</font>"]
+    
+    Mint(("<b>Mint</b><br><font color='red' size='2'>+1 Protocol ID</font>"))
+    
+    ScriptProtocol["<b>Protocol Validator</b> (CreateProtocol)"]@{shape: lean-r}
+    
+    CreateTx["<b>Create Protocol TX</b><br>----<br><font size='2'>Initialize protocol and mint ID token</font>"]
+    
+    Creator -- "Input UTXO used as unique reference for protocol policy" --> CreateTx
+    Mint --> CreateTx
+    ScriptProtocol --> CreateTx
+    
+    CreateTx --> CreatorOut["<b>Protocol Admin</b><br>------<br><font size='2'>Change output</font><br>------<br><font size='2'>[<font color='red'>-ADA</font>]</font>"]
+    
+    CreateTx --> ProtocolOut["<b>Protocol Validator</b><br>------<br><font size='2'>[<font color='red'>+1 Protocol ID, +ADA</font>]</font><br>------<br><font size='2'><font color='red'>New Protocol Datum</font>:<br>• Admin list<br>• Token admin policy<br>• MAYZ policy & name<br>• Deposit requirement<br>• Min ADA</font>"]
+
+    Creator:::utxoBox
+    CreatorOut:::utxoBox
+    CreateTx:::txBox 
+    ProtocolOut:::utxoBox
+    
+    classDef utxoBox fill:#dffcff,stroke:#333,stroke-width:2px,rx:15,ry:15
+    classDef txBox fill:#f5f5f5,stroke:#333,stroke-width:2px
+    classDef scriptBox fill:white,stroke:#333,stroke-width:2px
+    style ScriptProtocol fill:white,stroke:#333,stroke-width:2px
+    style Mint fill:#ffffdf,stroke:#333,stroke-width:2px,rx:50

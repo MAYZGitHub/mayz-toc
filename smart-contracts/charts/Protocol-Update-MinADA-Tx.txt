@@ -1,0 +1,27 @@
+flowchart LR
+    Admin["<b>Protocol Admin</b><br>------<br><font size='2'>Updates minimum ADA</font><br>------<br><font size='2'>[Admin signature or Admin token, ADA]</font>"]
+    
+    ProtocolIn["<b>Protocol Validator</b><br>------<br><font size='2'>[1 Protocol ID]</font><br>------<br><font size='2'>Protocol Datum</font>"]
+    
+    ScriptProtocol["<b>Protocol Validator</b> (UpdateProtocolMinADA)"]@{shape: lean-r}
+    
+    UpdateTx["<b>Update Protocol MinADA TX</b><br>----<br><font size='2'>Update minimum ADA requirement</font>"]
+    
+    Admin -- "Authorized by signature or token" --> UpdateTx
+    ProtocolIn --> UpdateTx
+    ScriptProtocol --> UpdateTx
+    
+    UpdateTx --> AdminOut["<b>Protocol Admin</b><br>------<br><font size='2'>Change output</font><br>------<br><font size='2'>[<font color='red'>±ADA</font>]</font>"]
+    
+    UpdateTx --> ProtocolOut["<b>Protocol Validator</b><br>------<br><font size='2'>[1 Protocol ID, <font color='red'>±ADA</font>]</font><br>------<br><font size='2'><font color='red'>Updated Protocol Datum</font>:<br>• Updated min_ada</font>"]
+
+    Admin:::utxoBox
+    ProtocolIn:::utxoBox
+    AdminOut:::utxoBox
+    UpdateTx:::txBox 
+    ProtocolOut:::utxoBox
+    
+    classDef utxoBox fill:#dffcff,stroke:#333,stroke-width:2px,rx:15,ry:15
+    classDef txBox fill:#f5f5f5,stroke:#333,stroke-width:2px
+    classDef scriptBox fill:white,stroke:#333,stroke-width:2px
+    style ScriptProtocol fill:white,stroke:#333,stroke-width:2px

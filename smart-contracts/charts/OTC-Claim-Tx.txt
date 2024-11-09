@@ -1,0 +1,27 @@
+flowchart LR
+    Buyer["<b>OTC Buyer</b><br>------<br><font size='2'>Claims locked tokens</font><br>------<br><font size='2'>[1 OTC NFT]</font>"]
+    
+    OTCIn["<b>OTC Validator</b><br>------<br><font size='2'>[1 OTC ID, Tokens locked, MAYZ tokens]</font><br>------<br><font size='2'>OTC Datum</font>"]
+    
+    ScriptOTC["<b>OTC Validator</b> (ClaimOTC)"]@{shape: lean-r}
+    
+    ClaimTx["<b>Claim OTC TX</b><br>----<br><font size='2'>Exchange OTC NFT for locked tokens</font>"]
+    
+    Buyer --> ClaimTx
+    OTCIn --> ClaimTx
+    ScriptOTC --> ClaimTx
+    
+    ClaimTx --> BuyerOut["<b>OTC Buyer</b><br>------<br><font size='2'>Change output</font><br>------<br><font size='2'>[<font color='red'>-1 OTC NFT, +Tokens locked</font>]</font>"]
+    
+    ClaimTx --> OTCOut["<b>OTC Validator</b><br>------<br><font size='2'>[1 OTC ID, <font color='red'>+1 OTC NFT, -Tokens locked</font>, MAYZ tokens]</font><br>------<br><font size='2'>OTC Datum</font>"]
+
+    Buyer:::utxoBox
+    OTCIn:::utxoBox
+    BuyerOut:::utxoBox
+    ClaimTx:::txBox 
+    OTCOut:::utxoBox
+    
+    classDef utxoBox fill:#dffcff,stroke:#333,stroke-width:2px,rx:15,ry:15
+    classDef txBox fill:#f5f5f5,stroke:#333,stroke-width:2px
+    classDef scriptBox fill:white,stroke:#333,stroke-width:2px
+    style ScriptOTC fill:white,stroke:#333,stroke-width:2px
