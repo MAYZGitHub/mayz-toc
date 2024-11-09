@@ -19,14 +19,13 @@ MAYZ Trustless OTC Smart Contract aims to solve liquidity and slippage issues fo
     - [Considerations:](#considerations)
     - [Special Considerations:](#special-considerations)
   - [Design and Architecture](#design-and-architecture)
-  - [Smart Contract Architecture](#smart-contract-architecture)
-    - [Error Handling and Security](#error-handling-and-security)
-    - [Interaction with Existing MAYZ Smart Contracts](#interaction-with-existing-mayz-smart-contracts)
+  - [Smart Contracts](#smart-contracts)
   - [Transition Plan: Individual to Institutional Approach](#transition-plan-individual-to-institutional-approach)
   - [External Interactions](#external-interactions)
   - [Use Cases and Benefits](#use-cases-and-benefits)
   - [Project Plan](#project-plan)
   - [Milestones](#milestones)
+  - [Cardano Catalyst Reports](#cardano-catalyst-reports)
   - [Links](#links)
   - [About MAYZ Protocol](#about-mayz-protocol)
   - [Acknowledgements](#acknowledgements)
@@ -103,22 +102,9 @@ The datum plays a crucial role in the OTC process, storing essential information
 - Token specifics: Includes details about the policy ID and token name of the backed tokens.
 - Transaction data: Stores other relevant transaction-related information.
 
-## Smart Contract Architecture
-The current architecture overview includes:
-1. Token Locking Contract: Allows users to lock fungible tokens.
-2. NFT Minting Contract: Mints NFTs representing locked tokens.
-3. Redemption Contract: Handles the exchange of NFTs back to fungible tokens.
+## Smart Contracts
 
-**Note for Cardano Catalyst Reviewer**: Detailed architecture, including specific contract functions, parameters, redeemers, and datums, will be provided in Milestone 2.
-
-### Error Handling and Security
-- **Token Redemption:** The Plutus validator script will include a check to ensure that the specific OTC NFT is burned in the same transaction that attempts to retrieve the underlying tokens. This ensures that only the current holder of the OTC NFT can redeem the locked tokens.
-- **Unauthorized Access Prevention:** For creators retrieving their tokens (in case no one has traded the OTC NFT), the Plutus validator will compare the transaction's signature with the signature stored in the datum. This ensures that only the original creator can reclaim their tokens if the OTC NFT hasn't been traded.
-
-These validation mechanisms based on Cardano's deterministic nature and Plutus' ability to access transaction details and datum information, providing a secure and trustless redemption process.
-
-### Interaction with Existing MAYZ Smart Contracts
-The OTC smart contracts operate independently of existing MAYZ contracts. The only interaction is the use of MAYZ tokens for creating OTC tokens, which are minted using separate MAYZ minting contracts.
+[README](./smart-contracts/README.md)
 
 ## Transition Plan: Individual to Institutional Approach
 This is our vision for potential future expansion:
@@ -169,9 +155,14 @@ The project will proceed in phases, starting with research and planning, followe
    - Outputs: Deployment of smart contracts on Mainnet, basic website for interactions, and educational resources.
    - Acceptance Criteria: Contracts deployed, website functional, educational content available, and all resources meet Catalyst requirements.
 
+## Cardano Catalyst Reports
+Here are the links to the Catalyst Milestone reports for the project. Each report provides an update on the project's progress, achievements, and next steps for each milestone.
+
+[Milestone 1 Report](./catalyst-reports/MILESTONE-01.md)
+
 ## Links
 - Tackling Slippage on Cardano: MAYZ Trustless OTC Smart Contract - Catalyst Proposal: [Proposal](https://cardano.ideascale.com/c/idea/120544) 
-- Milestones status: [Milestones](https://milestones.projectcatalyst.io/projects/1200222) 
+- Catalyst Milestones status page: [Milestones](https://milestones.projectcatalyst.io/projects/1200222) 
 - MAYZ's OTC GitHub repository: [Repository](https://github.com/MAYZGitHub/mayz-otc) 
 - MAYZ's OTC Documentation: [GitBook](https://mayz-1.gitbook.io/mayz-otc)
 - [MAYZ Website](https://mayz.io/)
