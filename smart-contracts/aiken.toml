@@ -10,6 +10,10 @@ user = "MAYZGitHub"
 project = "mayz-otc"
 platform = "github"
 
-dependencies = [
-  { name = "aiken-lang/stdlib", version = "v2.1.0", source = "github"}
-]
+[[dependencies]]
+name = "aiken-lang/stdlib"
+version = "v2.1.0"
+source = "github"
+
+[config]
+
