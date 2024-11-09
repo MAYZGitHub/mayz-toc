@@ -1,4 +1,4 @@
-# Milestone 02 Report for MAYZ Trustless OTC Smart Contract Project
+# Milestone 02 Report
 
 ## Overview
 
