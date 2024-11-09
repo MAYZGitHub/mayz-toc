@@ -1,17 +1,27 @@
-use aiken/builtin.{encode_utf8, equals_bytearray}
+use aiken/builtin.{equals_bytearray}
 use aiken/collection/dict
 use aiken/collection/list
+use aiken/collection/pairs
 use aiken/crypto.{VerificationKeyHash}
 use aiken/primitive/bytearray
-use aiken/primitive/string
 use cardano/address.{VerificationKey}
 use cardano/assets.{
   PolicyId, Value, add, match, merge, quantity_of, tokens, zero,
 }
-use cardano/transaction.{InlineDatum, Input, Output, Transaction}
-use types.{OTCDatum, ProtocolDatum}
+use cardano/transaction.{
+  InlineDatum, Input, Output, OutputReference, Redeemer, ScriptPurpose, Spend,
+  Transaction,
+}
+use types.{CancelOTC, CloseOTC, OTCDatum, OTCRedeemer, ProtocolDatum}
 
-// Helper to get protocol datum from reference inputs
+/// Get protocol datum from reference inputs
+/// Returns an Option containing the protocol output and datum if found
+/// 
+/// # Arguments
+/// * transaction - The transaction being validated
+/// * protocol_policy_id - The policy ID of the protocol token
+/// * protocol_id_tn - The token name of the protocol ID token
+/// * expect_count - Expected number of protocol inputs (usually 1)
 pub fn get_protocol_from_inputs_ref(
   transaction: Transaction,
   protocol_policy_id: PolicyId,
@@ -39,6 +49,14 @@ pub fn get_protocol_from_inputs_ref(
   }
 }
 
+/// Get protocol datum from inputs
+/// Returns an Option containing the protocol output and datum if found
+/// 
+/// # Arguments
+/// * transaction - The transaction being validated
+/// * protocol_policy_id - The policy ID of the protocol token
+/// * protocol_id_tn - The token name of the protocol ID token
+/// * expect_count - Expected number of protocol inputs (usually 1)
 pub fn get_protocol_from_inputs(
   transaction: Transaction,
   protocol_policy_id: PolicyId,
@@ -66,6 +84,14 @@ pub fn get_protocol_from_inputs(
   }
 }
 
+/// Get protocol datum from outputs
+/// Returns an Option containing the protocol output and datum if found
+/// 
+/// # Arguments
+/// * transaction - The transaction being validated
+/// * protocol_policy_id - The policy ID of the protocol token
+/// * protocol_id_tn - The token name of the protocol ID token
+/// * expect_count - Expected number of protocol outputs (usually 1)
 pub fn get_protocol_from_outputs(
   transaction: Transaction,
   protocol_policy_id: PolicyId,
@@ -93,6 +119,14 @@ pub fn get_protocol_from_outputs(
   }
 }
 
+/// Get OTC output and datum from inputs
+/// Returns an Option containing the OTC output and datum if found
+/// 
+/// # Arguments
+/// * transaction - The transaction being validated
+/// * otc_policy_id - The policy ID of the OTC token
+/// * otc_id_tn - The token name of the OTC ID token
+/// * expect_count - Expected number of OTC inputs (usually 1)
 pub fn get_otc_from_inputs(
   transaction: Transaction,
   otc_policy_id: PolicyId,
@@ -120,6 +154,49 @@ pub fn get_otc_from_inputs(
   }
 }
 
+/// Get OTC input with output reference and datum from inputs
+/// Returns an Option containing the input and OTC datum if found
+/// 
+/// # Arguments
+/// * transaction - The transaction being validated
+/// * otc_policy_id - The policy ID of the OTC token
+/// * otc_id_tn - The token name of the OTC ID token
+/// * expect_count - Expected number of OTC inputs (usually 1)
+pub fn get_otc_with_outref_from_inputs(
+  transaction: Transaction,
+  otc_policy_id: PolicyId,
+  otc_id_tn: ByteArray,
+  expect_count: Int,
+) -> Option<(Input, OTCDatum)> {
+  let otc_inputs =
+    list.filter(
+      transaction.inputs,
+      fn(input) {
+        quantity_of(input.output.value, otc_policy_id, otc_id_tn) == 1
+      },
+    )
+  if list.length(otc_inputs) == expect_count {
+    when list.head(otc_inputs) is {
+      Some(input) ->
+        when extract_otc_datum(input.output) is {
+          Some(otcDatum) -> Some((input, otcDatum))
+          None -> None
+        }
+      _ -> None
+    }
+  } else {
+    None
+  }
+}
+
+/// Get OTC output and datum from outputs
+/// Returns an Option containing the OTC output and datum if found
+/// 
+/// # Arguments
+/// * transaction - The transaction being validated
+/// * otc_policy_id - The policy ID of the OTC token
+/// * otc_id_tn - The token name of the OTC ID token
+/// * expect_count - Expected number of OTC outputs (usually 1)
 pub fn get_otc_from_outputs(
   transaction: Transaction,
   otc_policy_id: PolicyId,
@@ -145,6 +222,13 @@ pub fn get_otc_from_outputs(
   }
 }
 
+/// Check if OTC NFT token is present in transaction inputs
+/// Returns true if at least one input contains the OTC NFT
+/// 
+/// # Arguments
+/// * transaction - The transaction being validated
+/// * otc_policy_id - The policy ID of the OTC NFT
+/// * otc_nft_tn - The token name of the OTC NFT
 pub fn check_if_otc_nft_is_present_in_inputs(
   transaction: Transaction,
   otc_policy_id: PolicyId,
@@ -160,8 +244,11 @@ pub fn check_if_otc_nft_is_present_in_inputs(
   list.length(otc_inputs) >= 1
 }
 
-// Helpers
-
+/// Extract protocol datum from an output
+/// Returns an Option containing the protocol datum if successfully extracted
+/// 
+/// # Arguments
+/// * output - The output containing the datum
 pub fn extract_protocol_datum(output: Output) -> Option<ProtocolDatum> {
   when output.datum is {
     InlineDatum(data) -> {
@@ -172,6 +259,11 @@ pub fn extract_protocol_datum(output: Output) -> Option<ProtocolDatum> {
   }
 }
 
+/// Extract OTC datum from an output
+/// Returns an Option containing the OTC datum if successfully extracted
+/// 
+/// # Arguments
+/// * output - The output containing the datum
 pub fn extract_otc_datum(output: Output) -> Option<OTCDatum> {
   when output.datum is {
     InlineDatum(data) -> {
@@ -182,8 +274,12 @@ pub fn extract_otc_datum(output: Output) -> Option<OTCDatum> {
   }
 }
 
-// Protocol Admin authorization helpers
-
+/// Check if transaction is authorized by a protocol admin
+/// Returns true if signed by an admin or contains admin token
+/// 
+/// # Arguments
+/// * transaction - The transaction being validated
+/// * protocolDatum - The protocol datum containing admin information
 pub fn is_admin_auth(
   transaction: Transaction,
   protocolDatum: ProtocolDatum,
@@ -205,8 +301,15 @@ pub fn is_admin_auth(
   is_admin_signed || has_admin_token
 }
 
-// Protocol validation helpers
-
+/// Validate protocol parameters
+/// Returns true if all parameters are valid:
+/// - Minimum ADA is positive
+/// - Admin list is not empty
+/// - MAYZ deposit requirement is positive
+/// - Admin token policy ID is not empty
+///
+/// # Arguments
+/// * protocolDatum - The protocol datum to validate
 pub fn validate_protocol_params(protocolDatum: ProtocolDatum) -> Bool {
   and {
     protocolDatum.pd_min_ada > 0,
@@ -216,7 +319,12 @@ pub fn validate_protocol_params(protocolDatum: ProtocolDatum) -> Bool {
   }
 }
 
-// OTC Helper to check if transaction is signed by creator
+/// Check if transaction is signed by OTC creator
+/// Returns true if the creator's verification key hash is among the signers
+/// 
+/// # Arguments
+/// * transaction - The transaction being validated
+/// * creator - The verification key hash of the OTC creator
 pub fn is_signed_by_creator(
   transaction: Transaction,
   creator: VerificationKeyHash,
@@ -224,12 +332,23 @@ pub fn is_signed_by_creator(
   list.has(transaction.extra_signatories, creator)
 }
 
-// Value checking helpers
-
+/// Add lovelace to a value
+/// Returns a new value with the added lovelace amount
+/// 
+/// # Arguments
+/// * v - The base value
+/// * lovelace - The amount of lovelace to add
 pub fn add_lovelace(v: Value, lovelace: Int) -> Value {
   add(v, #"", #"", lovelace)
 }
 
+/// Check if a value is sent to a specific wallet address
+/// Returns true if the wallet receives at least the specified value
+/// 
+/// # Arguments
+/// * transaction - The transaction being validated
+/// * wallet - The verification key hash of the recipient wallet
+/// * value - The minimum value that should be received
 pub fn check_value_sent_to_wallet(
   transaction: Transaction,
   wallet: VerificationKeyHash,
@@ -251,6 +370,12 @@ pub fn check_value_sent_to_wallet(
   match(wallet_value, value, >=)
 }
 
+/// Check if a value is sent to the transaction signer
+/// Returns true if the signer receives at least the specified value
+/// 
+/// # Arguments
+/// * transaction - The transaction being validated
+/// * value - The minimum value that should be received
 pub fn check_value_sent_to_signer(
   transaction: Transaction,
   value: Value,
@@ -272,6 +397,13 @@ pub fn check_value_sent_to_signer(
   match(signer_value, value, >=)
 }
 
+/// Validate OTC token name format
+/// Returns true if the name follows the convention "OTC-[TOKEN]-[AMOUNT]"
+/// 
+/// # Arguments
+/// * name - The OTC token name to validate
+/// * token_tn - The underlying token name
+/// * token_amount - The amount of underlying tokens
 pub fn validate_otc_name(
   name: ByteArray,
   token_tn: ByteArray,
@@ -282,6 +414,11 @@ pub fn validate_otc_name(
   equals_bytearray(name, expected_name)
 }
 
+/// Generate OTC token name following the convention "OTC-[TOKEN]-[AMOUNT]"
+/// 
+/// # Arguments
+/// * token_tn - The underlying token name
+/// * amount - The amount of underlying tokens
 pub fn generate_otc_name(token_tn: ByteArray, amount: Int) -> ByteArray {
   // "OTC-" in hex is "4F54432D"
   let prefix = #"4f54432d"
@@ -294,6 +431,10 @@ pub fn generate_otc_name(token_tn: ByteArray, amount: Int) -> ByteArray {
   bytearray.concat(with_separator, formatted_amount)
 }
 
+/// Format a large number into a readable string
+/// 
+/// # Arguments
+/// * n - The number to format
 fn format_large_number(n: Int) -> ByteArray {
   let result = #""
   if n < 1000 {
@@ -333,4 +474,35 @@ fn pad_number(n: Int) -> ByteArray {
     // Add "0" prefix
     bytes
   }
+}
+
+pub fn extract_otc_redeemer(redeemer: Redeemer) -> Option<OTCRedeemer> {
+  expect otc_redeemer: OTCRedeemer = redeemer
+  Some(otc_redeemer)
+}
+
+/// Check if any redeemer in the transaction is a Close or Cancel operation
+pub fn is_close_or_cancel(redeemers: List<Redeemer>) -> Bool {
+  list.any(
+    redeemers,
+    fn(redeemer) {
+      when extract_otc_redeemer(redeemer) is {
+        Some(otc_redeemer) ->
+          when otc_redeemer is {
+            CloseOTC -> True
+            CancelOTC -> True
+            _ -> False
+          }
+        None -> False
+      }
+    },
+  )
+}
+
+/// Get redeemer for a specific output reference
+pub fn get_redeemer_of(
+  redeemers: Pairs<ScriptPurpose, Redeemer>,
+  outRef: OutputReference,
+) -> List<Redeemer> {
+  pairs.get_all(redeemers, Spend(outRef))
 }

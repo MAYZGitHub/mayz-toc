@@ -11,7 +11,7 @@ use utils.{
   is_admin_auth, validate_protocol_params,
 }
 
-// Protocol validator function
+/// Protocol validator implementing both spend and minting policies in a single Plutus V3 script
 validator protocol(params: ProtocolParams) {
   spend(
     datum: Option<ProtocolDatum>,
@@ -31,7 +31,7 @@ validator protocol(params: ProtocolParams) {
               protocolDatum_In,
               transaction,
             )
-          UpdateProtocolMinADA(new_min_ada) ->
+          UpdateProtocolMinADA { new_min_ada } ->
             validate_update_min_ada(
               params,
               protocol_policy_id,
@@ -39,7 +39,7 @@ validator protocol(params: ProtocolParams) {
               new_min_ada,
               transaction,
             )
-          _ -> False
+          CreateProtocol -> False
         }
       None -> False
     }
@@ -61,21 +61,23 @@ validator protocol(params: ProtocolParams) {
   }
 }
 
+/// Validates the creation of a new protocol instance
+/// This includes minting the Protocol ID token and setting up initial parameters
 fn validate_create(
   params: ProtocolParams,
   protocol_policy_id: PolicyId,
   transaction: Transaction,
 ) -> Bool {
-  // Verify that referenced UTXO is consumed
+  // Verify that referenced UTXO is consumed (ensures policy uniqueness)
   expect Some(_reference_input) =
     list.find(
       transaction.inputs,
-      fn(protocol_In) {
-        protocol_In.output_reference == params.pp_protocol_policy_id_tx_out_ref
+      fn(input) {
+        input.output_reference == params.pp_protocol_policy_id_tx_out_ref
       },
     )
 
-  // No protocol protocol_In should exist for minting
+  // No protocol input should exist during initial creation
   expect None =
     get_protocol_from_inputs(
       transaction,
@@ -83,7 +85,8 @@ fn validate_create(
       params.pp_protocol_id_tn,
       0,
     )
-  // Exactly one protocol output should exist
+
+  // Exactly one protocol output must be created
   expect Some((protocol_Out, protocolDatum_Out)) =
     get_protocol_from_outputs(
       transaction,
@@ -92,6 +95,7 @@ fn validate_create(
       1,
     )
 
+  // Control values for validation
   let protocolDatum_Out_Control = protocolDatum_Out
   let protocol_Out_Value_Control =
     [Pair(protocol_policy_id, [Pair(params.pp_protocol_id_tn, 1)])]
@@ -99,24 +103,26 @@ fn validate_create(
       |> add_lovelace(protocolDatum_Out.pd_min_ada)
 
   and {
-    // Verify Protocol ID token mint amount is 1
+    // Must mint exactly one Protocol ID token
     quantity_of(transaction.mint, protocol_policy_id, params.pp_protocol_id_tn) == 1,
-    // Initial parameters must be valid
+    // Initial protocol parameters must be valid
     validate_protocol_params(protocolDatum_Out),
-    // Protocol output value must match control
+    // Output value must match expected control value
     protocol_Out.value == protocol_Out_Value_Control,
-    // Protocol datum must match control
+    // Output datum must match control datum
     protocolDatum_Out == protocolDatum_Out_Control,
   }
 }
 
-// Updated validation functions with proper value and datum checks
+/// Validates updates to protocol parameters
+/// Only allows updating admin list, token admin policy, and MAYZ deposit requirement
 fn validate_update_params(
   params: ProtocolParams,
   protocol_policy_id: PolicyId,
   protocolDatum_In: ProtocolDatum,
   transaction: Transaction,
 ) -> Bool {
+  // Must have exactly one protocol input
   expect Some((protocol_In, _)) =
     get_protocol_from_inputs(
       transaction,
@@ -125,6 +131,7 @@ fn validate_update_params(
       1,
     )
 
+  // Must have exactly one protocol output
   expect Some((protocol_Out, protocolDatum_Out)) =
     get_protocol_from_outputs(
       transaction,
@@ -133,28 +140,30 @@ fn validate_update_params(
       1,
     )
 
+  // Verify admin authorization
   let authorized = is_admin_auth(transaction, protocolDatum_In)
 
-  // Protocol Datum Out can change but not the min_ada
+  // Control values - can update parameters but not min_ada
   let protocolDatum_Out_Control =
     ProtocolDatum {
       ..protocolDatum_Out,
       pd_min_ada: protocolDatum_In.pd_min_ada,
     }
-  // Protocol Value Out must be the same as Protocol Value In
+  // Value must remain unchanged
   let protocol_Out_Value_Control = protocol_In.value
 
   and {
     authorized,
-    // Fields that can change according to architecture:
+    // New parameters must be valid
     validate_protocol_params(protocolDatum_Out),
-    // Protocol output value must match control
+    // Output value must match input value
     protocol_Out.value == protocol_Out_Value_Control,
-    // Protocol datum must match control
+    // Output datum must match control datum
     protocolDatum_Out == protocolDatum_Out_Control,
   }
 }
 
+/// Validates updates to minimum ADA requirement
 fn validate_update_min_ada(
   params: ProtocolParams,
   protocol_policy_id: PolicyId,
@@ -162,6 +171,7 @@ fn validate_update_min_ada(
   new_min_ada: Int,
   transaction: Transaction,
 ) -> Bool {
+  // Must have exactly one protocol input
   expect Some((protocol_In, _)) =
     get_protocol_from_inputs(
       transaction,
@@ -170,6 +180,7 @@ fn validate_update_min_ada(
       1,
     )
 
+  // Must have exactly one protocol output
   expect Some((protocol_Out, protocolDatum_Out)) =
     get_protocol_from_outputs(
       transaction,
@@ -178,24 +189,25 @@ fn validate_update_min_ada(
       1,
     )
 
+  // Verify admin authorization
   let authorized = is_admin_auth(transaction, protocolDatum_In)
 
-  // Protocol Datum Out can change only the min_ada
+  // Control values - can only update min_ada
   let protocolDatum_Out_Control =
     ProtocolDatum { ..protocolDatum_In, pd_min_ada: new_min_ada }
-  // Protocol Value Out must be the same as Protocol Value In with the new ADA
+
+  // Update ADA amount in value
   let protocol_Out_Value_Control =
     protocol_In.value
-      |> add_lovelace(-protocolDatum_In.pd_min_ada)
-      |> add_lovelace(new_min_ada)
+      |> add_lovelace(-protocolDatum_In.pd_min_ada + new_min_ada)
 
   and {
     authorized,
-    // Fields that can change according to architecture:
+    // Parameters must remain valid
     validate_protocol_params(protocolDatum_Out),
-    // Protocol output value must match control
+    // Output value must match control with updated ADA
     protocol_Out.value == protocol_Out_Value_Control,
-    // Protocol datum must match control
+    // Output datum must match control
     protocolDatum_Out == protocolDatum_Out_Control,
   }
 }
