@@ -119,7 +119,6 @@ type ProtocolDatum {
   pd_mayz_deposit_requirement: Int,
   /// Minimum ADA required to be present in protocol UTXOs
   pd_min_ada: Int
-
 }
 ```
 
