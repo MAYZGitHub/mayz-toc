@@ -146,6 +146,7 @@ Implement a dedicated contract for managing buy offers with locked ADA collatera
 #### Implementation Details
 
 TODO: quisiera que pueda crear oferta por una x cantidad de tokens OTC a un precio x por cada token
+
 TODO: agregar posibilidad de que no sea una venta por el total, si no tambien algo parcial 
 
 ```
