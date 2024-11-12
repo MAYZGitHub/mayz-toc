@@ -3,6 +3,61 @@
 ## Executive Summary
 This document outlines proposed enhancements to the MAYZ Trustless OTC Smart Contract aimed at increasing flexibility, improving market efficiency, and providing better price protection mechanisms. These enhancements build upon the existing architecture while introducing new features to better serve various trading scenarios.
 
+## Table of Contents
+- [MAYZ Trustless OTC Smart Contract - Proposed Enhancements](#mayz-trustless-otc-smart-contract---proposed-enhancements)
+  - [Executive Summary](#executive-summary)
+  - [Table of Contents](#table-of-contents)
+  - [1. Flexible Token Issuance](#1-flexible-token-issuance)
+    - [Current Limitation](#current-limitation)
+    - [Proposed Enhancement](#proposed-enhancement)
+      - [Implementation Details](#implementation-details)
+      - [Benefits](#benefits)
+  - [2. In-Contract Exchange Mechanism](#2-in-contract-exchange-mechanism)
+    - [Current Limitation](#current-limitation-1)
+    - [Proposed Enhancement](#proposed-enhancement-1)
+      - [Implementation Details](#implementation-details-1)
+      - [Features](#features)
+  - [3. Price Protection Mechanisms](#3-price-protection-mechanisms)
+    - [Proposed Enhancement](#proposed-enhancement-2)
+      - [Features](#features-1)
+  - [4. Offers Contract](#4-offers-contract)
+    - [Proposed Enhancement](#proposed-enhancement-3)
+      - [Implementation Details](#implementation-details-2)
+      - [Key Features](#key-features)
+  - [5. MAYZ Token Management](#5-mayz-token-management)
+    - [Current Limitation](#current-limitation-2)
+    - [Proposed Enhancement](#proposed-enhancement-4)
+  - [6. Order and Offer Updates](#6-order-and-offer-updates)
+    - [Proposed Enhancement](#proposed-enhancement-5)
+      - [Features](#features-2)
+- [MAYZ Trustless OTC Smart Contract - Proposed Enhancements](#mayz-trustless-otc-smart-contract---proposed-enhancements-1)
+  - [Executive Summary](#executive-summary-1)
+  - [1. Flexible Token Issuance](#1-flexible-token-issuance-1)
+    - [Current Limitation](#current-limitation-3)
+    - [Proposed Enhancement](#proposed-enhancement-6)
+      - [Implementation Details](#implementation-details-3)
+      - [Benefits](#benefits-1)
+  - [2. In-Contract Exchange Mechanism](#2-in-contract-exchange-mechanism-1)
+    - [Current Limitation](#current-limitation-4)
+    - [Proposed Enhancement](#proposed-enhancement-7)
+      - [Implementation Details](#implementation-details-4)
+      - [Features](#features-3)
+  - [3. Price Protection Mechanisms](#3-price-protection-mechanisms-1)
+    - [Proposed Enhancement](#proposed-enhancement-8)
+      - [Features](#features-4)
+  - [4. Offers Contract](#4-offers-contract-1)
+    - [Proposed Enhancement](#proposed-enhancement-9)
+      - [Implementation Details](#implementation-details-5)
+      - [Key Features](#key-features-1)
+  - [5. MAYZ Token Management](#5-mayz-token-management-1)
+    - [Current Limitation](#current-limitation-5)
+    - [Proposed Enhancement](#proposed-enhancement-10)
+    - [Benefits of Direct Exchange vs External Marketplaces](#benefits-of-direct-exchange-vs-external-marketplaces)
+  - [6. Order and Offer Updates](#6-order-and-offer-updates-1)
+    - [Proposed Enhancement](#proposed-enhancement-11)
+      - [Features](#features-5)
+
+  
 ## 1. Flexible Token Issuance
 
 ### Current Limitation
@@ -13,14 +68,14 @@ Introduce support for minting multiple Fungible Tokens (FTs) instead of a single
 
 #### Implementation Details
 - **Smart Contract Changes**:
-CODE
+```
 type OTCDatum {
     /// Existing fields
     ft_total_supply: Int,
     ft_tokens_per_unit: Int,
     is_fractional: Bool
 }
-CODE
+```
 
 - **Validation Rules**:
   - Total underlying tokens must equal `ft_total_supply * ft_tokens_per_unit`
@@ -41,7 +96,7 @@ OTC tokens must be traded on external marketplaces, adding complexity and potent
 Enable direct token exchanges within the OTC contract using either fixed prices or oracle-based pricing.
 
 #### Implementation Details
-CODE
+```
 type OTCDatum {
   /// Existing fields
   price_in_ada: Int,
@@ -59,7 +114,7 @@ type OracleConfig {
   price_tolerance: Int,
   update_frequency: POSIXTime
 }
-CODE
+```
 
 #### Features
 1. **Fixed Price Trading**
@@ -93,7 +148,7 @@ Implement a dedicated contract for managing buy offers with locked ADA collatera
 TODO: quisiera que pueda crear oferta por una x cantidad de tokens OTC a un precio x por cada token
 TODO: agregar posibilidad de que no sea una venta por el total, si no tambien algo parcial 
 
-CODE
+```
 type OfferDatum {
   otc_token_policy_id: PolicyId,
   otc_token_name: TokenName,
@@ -106,7 +161,7 @@ type OfferDatum {
 type OfferStatus {
   Active | Expired | Canceled | Accepted
 }
-CODE
+```
 
 #### Key Features
 1. **Offer Creation**
@@ -184,14 +239,14 @@ Introduce support for minting multiple Fungible Tokens (FTs) instead of a single
 
 #### Implementation Details
 - **Smart Contract Changes**:
-CODE
+```
 type OTCDatum {
     /// Existing fields
     ft_total_supply: Int,
     ft_tokens_per_unit: Int,
     is_fractional: Bool
 }
-CODE
+```
 
 - **Validation Rules**:
   - Total underlying tokens must equal `ft_total_supply * ft_tokens_per_unit`
@@ -212,7 +267,7 @@ OTC tokens must be traded on external marketplaces, adding complexity and potent
 Enable direct token exchanges within the OTC contract using either fixed prices or oracle-based pricing.
 
 #### Implementation Details
-CODE
+```
 type OTCDatum {
   /// Existing fields
   price_in_ada: Int,
@@ -230,7 +285,7 @@ type OracleConfig {
   price_tolerance: Int,
   update_frequency: POSIXTime
 }
-CODE
+```
 
 #### Features
 1. **Fixed Price Trading**
@@ -262,7 +317,7 @@ Implement a dedicated contract for managing buy offers with locked ADA collatera
 TODO: registro de parcialidad ejecutada
 
 #### Implementation Details
-CODE
+```
 type OfferDatum {
   otc_token_policy_id: PolicyId,
   otc_token_name: TokenName,
@@ -282,7 +337,7 @@ type OfferDatum {
 type OfferStatus {
   Active | Expired | Canceled | Accepted | Partial Accepted
 }
-CODE
+```
 
 #### Key Features
 1. **Offer Creation**
