@@ -524,36 +524,36 @@ pub type OTCRedeemer {
 The following transaction diagrams provide a visual breakdown of key operations in the OTC smart contract system:
 
 1. **Protocol Creation**: Establishes protocol governance parameters and mints the Protocol ID token.
-   <br>
-   <img src="../smart-contracts/charts/Protocol-Create-Tx.png" width="800px">
+
+<img src="../smart-contracts/charts/Protocol-Create-Tx.png" width="800px">
 
 2. **Protocol Update - Minimum ADA**: Updates the minimum ADA requirement for protocol UTXOs.
-   <br>
-   <img src="../smart-contracts/charts/Protocol-Update-MinADA-Tx.png" width="800px">
+
+<img src="../smart-contracts/charts/Protocol-Update-MinADA-Tx.png" width="800px">
 
 3. **Protocol Update - Parameters**: Modifies the protocol’s administrative parameters such as admin lists or deposit requirements.
-   <br>
-   <img src="../smart-contracts/charts/Protocol-Update-Params-Tx.png" width="800px">
+
+<img src="../smart-contracts/charts/Protocol-Update-Params-Tx.png" width="800px">
 
 4. **OTC Creation**: Enables users to lock tokens and receive an OTC NFT, representing ownership of the underlying assets.
-   <br>
-   <img src="../smart-contracts/charts/OTC-Create-Tx.png" width="800px">
+
+<img src="../smart-contracts/charts/OTC-Create-Tx.png" width="800px">
 
 5. **OTC Update - Minimum ADA**: Updates the minimum ADA requirement specifically for OTC UTXOs.
-   <br>
-   <img src="../smart-contracts/charts/OTC-Update-MinADA-Tx.png" width="800px">
+
+<img src="../smart-contracts/charts/OTC-Update-MinADA-Tx.png" width="800px">
 
 6. **OTC Claiming**: Allows an OTC NFT holder to redeem the underlying tokens.
-   <br>
-   <img src="../smart-contracts/charts/OTC-Claim-Tx.png" width="800px">
+
+<img src="../smart-contracts/charts/OTC-Claim-Tx.png" width="800px">
 
 7. **OTC Closing**: Closes an OTC position and returns the deposited ADA or MAYZ tokens to the creator after a successful claim.
-   <br>
-   <img src="../smart-contracts/charts/OTC-Close-Tx.png" width="800px">
+
+<img src="../smart-contracts/charts/OTC-Close-Tx.png" width="800px">
 
 8. **OTC Cancellation**: Cancels an active OTC position, retrieving all locked assets back to the creator.
-   <br>
-   <img src="../smart-contracts/charts/OTC-Cancel-Tx.png" width="800px">
+
+<img src="../smart-contracts/charts/OTC-Cancel-Tx.png" width="800px">
 
 ## Security Considerations
 
