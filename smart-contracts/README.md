@@ -28,10 +28,10 @@
         - [Field Descriptions](#field-descriptions-1)
       - [OTC Redeemers](#otc-redeemers)
         - [1. CreateOTC](#1-createotc)
-        - [1. ClaimOTC](#1-claimotc)
-        - [2. CloseOTC](#2-closeotc)
-        - [3. CancelOTC](#3-cancelotc)
-        - [4. UpdateOTCMinADA](#4-updateotcminada)
+        - [2. ClaimOTC](#2-claimotc)
+        - [3. CloseOTC](#3-closeotc)
+        - [4. CancelOTC](#4-cancelotc)
+        - [5. UpdateOTCMinADA](#5-updateotcminada)
   - [Token Flow and Interactions](#token-flow-and-interactions)
     - [Token Standards](#token-standards)
     - [Creation Flow](#creation-flow)
@@ -41,7 +41,6 @@
   - [Transaction Diagrams](#transaction-diagrams)
   - [Security Considerations](#security-considerations)
   - [Metadata Handling](#metadata-handling)
-
 
 ## Overview
 
@@ -57,14 +56,13 @@ The MAYZ Trustless OTC Smart Contract architecture consists of three main compon
 
 ## Install
 ```
-
 # Install aikup
 npm install -g @aiken-lang/aikup
 
 # Run aikup
 aikup
 
-# Add Aiken to your PAHT
+# Add Aiken to your PATH
 export PATH="/home/manuelpadilla/.aiken/bin:$PATH"
 
 # Build the project
@@ -73,7 +71,7 @@ aiken build
 # Run tests (when you have them)
 aiken check
 
-# Format ```
+# Format
 aiken fmt
 
 # Generate documentation
@@ -81,7 +79,6 @@ aiken docs
 
 # Check Aiken version
 aiken --version
-
 ```
 
 ## Smart Contract Components
@@ -89,8 +86,7 @@ aiken --version
 ### Protocol Contract
 
 #### Parameters
-
-Parameters for the Protocol Contract and its Policy ID minting
+Parameters for the Protocol Contract and its Policy ID minting:
 
 ```
 type ProtocolParams {
@@ -102,8 +98,7 @@ type ProtocolParams {
 ```
 
 #### Protocol Datum Structure
-
-Protocol Datum storing governance and configuration parameters
+Protocol Datum storing governance and configuration parameters:
 
 ```
 type ProtocolDatum {
@@ -139,10 +134,12 @@ type ProtocolDatum {
    - Note: Provides an alternative to direct wallet-based admin authorization
   
 3. **pd_mayz_policy_id** (PolicyId)
-   - MAYZ token policy ID
+   - Purpose: Stores the MAYZ token policy ID
+   - Type: Cardano PolicyId
 
 4. **pd_mayz_tn** (ByteArray)
-   - MAYZ token name
+   - Purpose: Stores the MAYZ token name
+   - Type: ByteArray representing token name
 
 5. **pd_mayz_deposit_requirement** (Int)
    - Purpose: Specifies the required amount of $MAYZ tokens for OTC creation
@@ -163,8 +160,7 @@ Administrative actions can be performed in two ways:
 2. Token-based authorization: Transaction includes a token from pd_token_admin_policy_id
 
 #### Protocol Redeemers
-
-Redeemers for the Protocol Contract
+Redeemers for the Protocol Contract:
 
 ```
 pub type ProtocolRedeemer {
@@ -220,8 +216,7 @@ pub type ProtocolRedeemer {
 ### OTC NFT Minting Policy
 
 #### Parameters
-
-Parameters for the OTC NFT Minting Policy 
+Parameters for the OTC NFT Minting Policy:
 
 ```
 type OTCNFTParams {
@@ -233,12 +228,12 @@ type OTCNFTParams {
   pp_protocol_policy_id: PolicyId,
   /// Protocol ID token name
   pp_protocol_id_tn: ByteArray,
-  // OTC ID token name
+  /// OTC ID token name
   pp_otc_id_tn: ByteArray,
 }
 ```
 
-Each instance of the minting policy is unique due to its required OutputReference parameter.
+> Note: Each instance of the minting policy is unique due to its required OutputReference parameter.
 
 #### Minting Policy Logic
 The minting policy validates that:
@@ -255,8 +250,7 @@ Example: "OTC-LEND-1.50M"
 ```
 
 #### Minting Policy Redeemers
-
-Redeemers for the OTC NFT Minting Policy
+Redeemers for the OTC NFT Minting Policy:
 
 ```
 pub type NFTRedeemer {
@@ -269,8 +263,7 @@ pub type NFTRedeemer {
 
 ##### 1. MintNFT 
 - Purpose: Initialize OTC position by minting NFT ID token
-- Transaction Structure:
-  Same as [1. CreateOTC](#1-createotc)
+- Transaction Structure: Same as [1. CreateOTC](#1-createotc)
 - Validations:
   * OutputReference is consumed (ensures policy uniqueness)
   * Exactly one OTC NFT and one OTC ID token minted
@@ -280,18 +273,17 @@ pub type NFTRedeemer {
 
 ##### 2. BurnNFT
 - Purpose: Burn OTC NFT token during CloseOTC or CancelOTC operations
-- Transaction Structure: 
-- Same as [2. CloseOTC](#2-closeotc) or [3. CancelOTC](#3-cancelotc)
+- Transaction Structure: Same as [3. CloseOTC](#3-closeotc) or [4. CancelOTC](#4-cancelotc)
 - Validations:
   * Exactly one OTC NFT and one OTC ID token burned
   * Must occur in same transaction as OTC Contract CloseOTC or CancelOTC
   * Proper OTC validator involvement
-  
+
 ### OTC Contract
 
-Parameters for the OTC Validator and NFT ID Policy
-
 #### Parameters
+Parameters for the OTC Validator and NFT ID Policy:
+
 ```
 type OTCParams {
   /// Protocol ID policy ID
@@ -304,8 +296,7 @@ type OTCParams {
 ```
 
 #### OTC Datum Structure
-
-Datum for OTC positions storing state and configuration
+Datum for OTC positions storing state and configuration:
 
 ```
 type OTCDatum {
@@ -332,7 +323,7 @@ type OTCDatum {
 }
 ```
 
-MAYZ token fields are stored in datum to maintain version consistency throughout the lifetime of the OTC position, even if protocol updates these values later
+> Note: MAYZ token fields are stored in datum to maintain version consistency throughout the lifetime of the OTC position, even if protocol updates these values later.
 
 ##### Field Descriptions
 
@@ -396,11 +387,9 @@ MAYZ token fields are stored in datum to maintain version consistency throughout
    - Note: Returned to creator along with other assets
 
 #### OTC Redeemers
-
-Redeemers for the OTC Contract
+Redeemers for the OTC Contract:
 
 ```
-/// Redeemers for the OTC Contract
 pub type OTCRedeemer {
   /// Create new OTC position and mint OTC ID token
   CreateOTC
@@ -437,7 +426,7 @@ pub type OTCRedeemer {
   * Output datum contains correct OTC datum
   * OTC NFT token sent to creator
 
-##### 1. ClaimOTC
+##### 2. ClaimOTC
 - Purpose: Redeem underlying tokens using OTC NFT token
 - Transaction Structure:
   * Input 1: User UTXO with OTC NFT token
@@ -451,7 +440,7 @@ pub type OTCRedeemer {
   * Output maintains $MAYZ Token deposit, minimum ADA, and OTC ID token and add the OTC NFT token 
   * Underlying tokens transferred to transaction signer
 
-##### 2. CloseOTC
+##### 3. CloseOTC
 - Purpose: Close completed OTC position and retrieve $MAYZ Token deposit
 - Transaction Structure:
   * Input: OTC UTXO (identified by OTC ID token) with OTC NFT token
@@ -465,7 +454,7 @@ pub type OTCRedeemer {
   * Transaction signed by original creator
   * $MAYZ Token deposit and minimum ADA returned to creator
 
-##### 3. CancelOTC
+##### 4. CancelOTC
 - Purpose: Cancel active OTC position and retrieve all assets
 - Transaction Structure:
   * Input 1: User UTXO with OTC NFT token
@@ -480,7 +469,7 @@ pub type OTCRedeemer {
   * Transaction signed by original creator
   * All assets ($MAYZ Token, underlying tokens, minimum ADA) returned to creator
 
-##### 4. UpdateOTCMinADA
+##### 5. UpdateOTCMinADA
 - Purpose: Update minimum ADA in OTC UTXO
 - Transaction Structure:
   * Input: OTC UTXO (identified by OTC ID token)
@@ -491,7 +480,7 @@ pub type OTCRedeemer {
   * Single valid OTC UTXO output (containing OTC ID token)
   * Only allowed update: minimum ADA field
   * Output must contain updated minimum ADA amount
-  
+
 ## Token Flow and Interactions
 
 ### Token Standards
@@ -507,7 +496,7 @@ pub type OTCRedeemer {
 ### Creation Flow
 1. User deposits underlying tokens + MAYZ tokens
 2. New OTC NFT minting policy instance is created (unique per position)
-2. OTC Contract mints OTC ID token
+3. OTC Contract mints OTC ID token
 4. MAYZ token details from protocol are stored in position datum
 5. OTC NFT token sent to creator
 6. Underlying tokens locked in contract
@@ -522,7 +511,7 @@ pub type OTCRedeemer {
 1. Creator initiates close after successful claim
 2. OTC Contract burns OTC ID token
 3. OTC NFT policy burns NFT token
-6. MAYZ deposit returned to creator
+4. MAYZ deposit returned to creator
 
 ### Cancellation Flow
 1. Creator initiates cancellation
@@ -569,30 +558,30 @@ The following transaction diagrams provide a visual breakdown of key operations 
 ## Security Considerations
 
 1. Token Validation
-- Strict verification of token policies
-- Amount validation for all token operations
-- Proper burning verification
+   - Strict verification of token policies
+   - Amount validation for all token operations
+   - Proper burning verification
 
 2. Authorization
-- Creator-only operations for close/cancel
-- Admin-only protocol updates
-- Token-based authorization checks
+   - Creator-only operations for close/cancel
+   - Admin-only protocol updates
+   - Token-based authorization checks
 
 3. Value Preservation
-- Input/output value matching
-- Minimum ADA requirements
-- Proper token allocation
+   - Input/output value matching
+   - Minimum ADA requirements
+   - Proper token allocation
 
 4. Policy Uniqueness
-- Each OTC NFT minting policy instance is unique due to OutputReference parameter
-- OutputReference must be consumed during minting
-- This prevents token name collisions across different OTC positions
-- Even if two positions have identical token amounts, they'll have different policy IDs
-  
+   - Each OTC NFT minting policy instance is unique due to OutputReference parameter
+   - OutputReference must be consumed during minting
+   - This prevents token name collisions across different OTC positions
+   - Even if two positions have identical token amounts, they'll have different policy IDs
+
 5. Version Control
-- MAYZ token details stored in OTC datum
-- Protects positions from unexpected protocol updates
-- Ensures consistent token validation throughout position lifecycle
+   - MAYZ token details stored in OTC datum
+   - Protects positions from unexpected protocol updates
+   - Ensures consistent token validation throughout position lifecycle
 
 ## Metadata Handling
 

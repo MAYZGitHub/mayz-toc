@@ -9,7 +9,6 @@ MAYZ Trustless OTC Smart Contract aims to solve liquidity and slippage issues fo
   - [Overview](#overview)
   - [Table of Contents](#table-of-contents)
   - [Why This OTC?](#why-this-otc)
-  - [Project Status](#project-status)
   - [Documentation](#documentation)
   - [Analysis of Possible Solutions](#analysis-of-possible-solutions)
     - [Individualized Solution:](#individualized-solution)
@@ -23,7 +22,7 @@ MAYZ Trustless OTC Smart Contract aims to solve liquidity and slippage issues fo
   - [Transition Plan: Individual to Institutional Approach](#transition-plan-individual-to-institutional-approach)
   - [External Interactions](#external-interactions)
   - [Use Cases and Benefits](#use-cases-and-benefits)
-  - [Project Plan](#project-plan)
+  - [Project Plan and Status](#project-plan-and-status)
   - [Milestones](#milestones)
   - [Cardano Catalyst Reports](#cardano-catalyst-reports)
   - [Links](#links)
@@ -32,17 +31,6 @@ MAYZ Trustless OTC Smart Contract aims to solve liquidity and slippage issues fo
 
 ## Why This OTC?
 Liquidity issues on Cardano's DEXs can lead to high slippage, discouraging large trades. As detailed in our [Research report on liquidity challenges in the Cardano ecosystem](https://docs.google.com/document/d/1WZ7hvn7w34FM8f7xvnZdzBhkokn43SrJW2hU8AAui-c/), the absence of sufficient liquidity for large transactions often results in price impacts that deter large investors. By leveraging a smart contract-based OTC solution, MAYZ's OTC provides an alternative that reduces slippage and increases market efficiency, making Cardano a more attractive option for high-volume traders.
-
-## Project Status
-We are close to complete Milestone 1 of our project, which focused on research, planning, and initial documentation. Key achievements include:
-
-1. Conducted comprehensive research on liquidity challenges in the Cardano ecosystem.
-2. Developed a detailed project plan outlining our approach and timeline.
-3. Created initial functional documentation providing an overview of the proposed OTC smart contract architecture.
-
-Our current work has laid the foundation for the development stages to come, ensuring we have a solid understanding of the problem space and a clear roadmap for implementation.
-
-Our next steps will involve moving into the detailed design and development phases, where we will start translating our research and plans into concrete smart contract implementations on the Cardano blockchain.
 
 ## Documentation
 - [Gitbook](https://mayz-1.gitbook.io/mayz-otc)
@@ -86,7 +74,7 @@ The roadmap for this solution includes:
 ## Design and Architecture
 This section describes the design and architecture of the chosen Individualized Solution.
 
-**Concept**:  
+**Concept**:
 Implementing an OTC market using Cardano's smart contract capabilities to create a trustless environment for large transactions, focused on individual users.
 
 **OTC Token Flow**:  
@@ -130,12 +118,12 @@ These interactions are facilitated by the standard Cardano token protocols, ensu
 - **High-Volume Traders**: Reduces slippage and trading costs, making Cardano more competitive for large-scale operations.
 - **NFT Enthusiasts**: By combining fungible and non-fungible tokens, the solution encourages innovation and broader participation within the ecosystem.
 
-## Project Plan
+## Project Plan and Status
 The project will proceed in phases, starting with research and planning, followed by development, testing, and public release. The project plan outlines the objectives, timeline, and deliverables, ensuring a structured approach to developing the Trustless OTC solution. Key phases include:
 
 1. Research and analysis of liquidity issues (Completed in Milestone 1)
 2. Creation of a detailed project plan and timeline (Completed in Milestone 1)
-3. Development of functional and technical documentation (Initiated in Milestone 1, to be completed in Milestone 2)
+3. Development of functional and technical documentation (Initiated in Milestone 1, Ccompleted in Milestone 2)
 4. Prototype development, testing, and public release
 
 ## Milestones
@@ -159,6 +147,7 @@ The project will proceed in phases, starting with research and planning, followe
 Here are the links to the Catalyst Milestone reports for the project. Each report provides an update on the project's progress, achievements, and next steps for each milestone.
 
 [Milestone 1 Report](./catalyst-reports/MILESTONE-01.md)
+
 [Milestone 2 Report](./catalyst-reports/MILESTONE-02.md)
 
 ## Links
