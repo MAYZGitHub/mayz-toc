@@ -523,35 +523,36 @@ pub type OTCRedeemer {
 
 The following transaction diagrams provide a visual breakdown of key operations in the OTC smart contract system:
 
-1. **Protocol Creation**: Establishes protocol governance parameters and mints the Protocol ID token.
+
+1. **[Protocol Creation](../smart-contracts/charts/Protocol-Create-Tx.png)**: Establishes protocol governance parameters and mints the Protocol ID token.
 
 <img src="../smart-contracts/charts/Protocol-Create-Tx.png" width="800px">
 
-2. **Protocol Update - Minimum ADA**: Updates the minimum ADA requirement for protocol UTXOs.
+2. **[Protocol Update Min ADA](../smart-contracts/charts/Protocol-Update-MinADA-Tx.png)**: Updates the minimum ADA requirement for protocol UTXOs.
 
 <img src="../smart-contracts/charts/Protocol-Update-MinADA-Tx.png" width="800px">
 
-3. **Protocol Update - Parameters**: Modifies the protocol’s administrative parameters such as admin lists or deposit requirements.
+3. **[Protocol Update Parameters](../smart-contracts/charts/Protocol-Update-Params-Tx.png)**: Modifies the protocol's administrative parameters such as admin lists or deposit requirements.
 
 <img src="../smart-contracts/charts/Protocol-Update-Params-Tx.png" width="800px">
 
-4. **OTC Creation**: Enables users to lock tokens and receive an OTC NFT, representing ownership of the underlying assets.
+4. **[OTC Creation](../smart-contracts/charts/OTC-Create-Tx.png)**: Enables users to lock tokens and receive an OTC NFT, representing ownership of the underlying assets.
 
 <img src="../smart-contracts/charts/OTC-Create-Tx.png" width="800px">
 
-5. **OTC Update - Minimum ADA**: Updates the minimum ADA requirement specifically for OTC UTXOs.
+5. **[OTC Update - Minimum ADA](../smart-contracts/charts/OTC-Update-MinADA-Tx.png)**: Updates the minimum ADA requirement specifically for OTC UTXOs.
 
 <img src="../smart-contracts/charts/OTC-Update-MinADA-Tx.png" width="800px">
 
-6. **OTC Claiming**: Allows an OTC NFT holder to redeem the underlying tokens.
+6. **[OTC Claiming](../smart-contracts/charts/OTC-Claim-Tx.png)**: Allows an OTC NFT holder to redeem the underlying tokens.
 
 <img src="../smart-contracts/charts/OTC-Claim-Tx.png" width="800px">
 
-7. **OTC Closing**: Closes an OTC position and returns the deposited ADA or MAYZ tokens to the creator after a successful claim.
+7. **[OTC Closing](../smart-contracts/charts/OTC-Close-Tx.png)**: Closes an OTC position and returns the deposited ADA or MAYZ tokens to the creator after a successful claim.
 
 <img src="../smart-contracts/charts/OTC-Close-Tx.png" width="800px">
 
-8. **OTC Cancellation**: Cancels an active OTC position, retrieving all locked assets back to the creator.
+8. **[OTC Cancellation](../smart-contracts/charts/OTC-Cancel-Tx.png)**: Cancels an active OTC position, retrieving all locked assets back to the creator.
 
 <img src="../smart-contracts/charts/OTC-Cancel-Tx.png" width="800px">
 

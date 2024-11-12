@@ -24,22 +24,21 @@ Each of these contracts operates under a set of defined parameters, redeemers, a
 
 The following transaction diagrams provide a visual breakdown of key operations in the OTC smart contract system:
 
-1. **Protocol Creation**: Establishes protocol governance parameters and mints the Protocol ID token.
+1. **[Protocol Creation](../smart-contracts/charts/Protocol-Create-Tx.png)**: Establishes protocol governance parameters and mints the Protocol ID token.
 
 <img src="../smart-contracts/charts/Protocol-Create-Tx.png" width="800px">
 
-2. **OTC Creation**: Enables users to lock tokens and receive an OTC NFT, representing ownership of the underlying assets.
+2. **[OTC Creation](../smart-contracts/charts/OTC-Create-Tx.png)**: Enables users to lock tokens and receive an OTC NFT, representing ownership of the underlying assets.
 
 <img src="../smart-contracts/charts/OTC-Create-Tx.png" width="800px">
 
-3. **OTC Claiming**: Allows an OTC NFT holder to redeem the underlying tokens.
+3. **[OTC Claiming](../smart-contracts/charts/OTC-Claim-Tx.png)**: Allows an OTC NFT holder to redeem the underlying tokens.
 
 <img src="../smart-contracts/charts/OTC-Claim-Tx.png" width="800px">
 
-4. **OTC Closing and Cancellation**: Handles the burning of OTC tokens, ensuring that any deposits are returned to the creator or locked assets are retrieved in case of cancellation.
+4. **[OTC Closing](../smart-contracts/charts/OTC-Close-Tx.png) and [Cancellation](../smart-contracts/charts/OTC-Cancel-Tx.png)**: Handles the burning of OTC tokens, ensuring that any deposits are returned to the creator or locked assets are retrieved in case of cancellation.
 
 <img src="../smart-contracts/charts/OTC-Close-Tx.png" width="800px">
-
 <img src="../smart-contracts/charts/OTC-Cancel-Tx.png" width="800px">
 
 ## Explanation of the Transition to Aiken
