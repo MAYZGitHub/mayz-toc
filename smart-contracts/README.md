@@ -540,7 +540,7 @@ The following transaction diagrams provide a visual breakdown of key operations 
 
 <img src="../smart-contracts/charts/OTC-Create-Tx.png" width="800px">
 
-5. **[OTC Update - Minimum ADA](../smart-contracts/charts/OTC-Update-MinADA-Tx.png)**: Updates the minimum ADA requirement specifically for OTC UTXOs.
+5. **[OTC Update Min ADA](../smart-contracts/charts/OTC-Update-MinADA-Tx.png)**: Updates the minimum ADA requirement specifically for OTC UTXOs.
 
 <img src="../smart-contracts/charts/OTC-Update-MinADA-Tx.png" width="800px">
 
