@@ -12,7 +12,7 @@ Milestone 02 focuses on the architecture and initial implementation of the MAYZ 
 
 ## Architectural Highlights
 
-The architecture, detailed in the [README](./smart-contracts/README.md) in the `smart-contracts` folder, is comprised of three core smart contract components:
+The architecture, detailed in the [README](../smart-contracts/README.md) in the `smart-contracts` folder, is comprised of three core smart contract components:
 
 1. **Protocol Contract**: Manages protocol parameters and minting of Protocol ID tokens, leveraging Plutus V3 capabilities for enhanced efficiency.
 2. **OTC Contract**: Manages the core OTC functionalities, including token locking, NFT issuance, and redemption.
