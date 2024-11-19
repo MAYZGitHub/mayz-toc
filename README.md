@@ -158,6 +158,7 @@ Here are the links to the Catalyst Milestone reports for the project. Each repor
 - [MAYZ Website](https://mayz.io/)
 - [MAYZ X](https://twitter.com/MAYZProtocol)
 - [MAYZ Discord](https://discord.com/invite/6xkbynuNrj)
+- [MAYZ Medium](https://medium.com/@MAYZprotocol)
 - [MAYZ GitHub](https://github.com/MAYZGitHub/)
 
 ## About MAYZ Protocol

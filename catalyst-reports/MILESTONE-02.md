@@ -22,7 +22,7 @@ Each of these contracts operates under a set of defined parameters, redeemers, a
 
 ## Transaction Diagrams
 
-The following transaction diagrams provide a visual breakdown of key operations in the OTC smart contract system:
+The following transaction diagrams provide a visual breakdown of key operations in the OTC smart contract system.
 
 1. **[Protocol Creation](../smart-contracts/charts/Protocol-Create-Tx.png)**: Establishes protocol governance parameters and mints the Protocol ID token.
 
@@ -40,6 +40,27 @@ The following transaction diagrams provide a visual breakdown of key operations 
 
 <img src="../smart-contracts/charts/OTC-Close-Tx.png" width="800px">
 <img src="../smart-contracts/charts/OTC-Cancel-Tx.png" width="800px">
+
+### References
+
+#### Node Types
+
+| Shape | Description | Visual |
+|-------|-------------|--------|
+| Rounded Rectangle | UTXO/Address box - Represents inputs and outputs | `fill:#dffcff,stroke:#333,stroke-width:2px,rx:15,ry:15` |
+| Rectangle | Transaction box - Represents the transaction being executed | `fill:#f5f5f5,stroke:#333,stroke-width:2px` |
+| Right-leaning Parallelogram | Script validator - Represents validator scripts involved with the Redeemer required | `fill:white,stroke:#333,stroke-width:2px,shape:lean-r` |
+| Circle | Token minting/burning - Shows token operations | `fill:#ffffdf,stroke:#333,stroke-width:2px,rx:50` |
+
+#### Connections
+
+| Arrow Type | Meaning |
+|------------|---------|
+| Solid Arrow | Input flow / Dependencies |
+| Input → Transaction | Shows which UTXOs are consumed |
+| Transaction → Output | Shows which UTXOs are created |
+| Script → Transaction | Shows which validators are involved |
+| Token Op → Transaction | Shows minting/burning operations |
 
 ## Explanation of the Transition to Aiken
 
