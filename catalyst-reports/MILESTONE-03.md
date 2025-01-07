@@ -106,6 +106,27 @@ Comprehensive test suite executed with aiken check:
 │ PASS [mem: 418361, cpu: 127689940] update_protocol_min_ada
 │ PASS [mem: 398630, cpu: 116558955] invalid_admin_auth
 ┕━━━━ 5 tests | 5 passed | 0 failed
+
+┍━ utils ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+│ PASS [mem: 197967, cpu:  59689516] generate_otc_name_inspect
+│ · with traces
+│ | result: h'4F54432D544F4B454E2D31303030303030'
+│ | result: OTC-TOKEN-1000000
+│ PASS [mem:  41554, cpu:  11449568] validate_otc_name_with_valid_input
+│ PASS [mem:  42155, cpu:  11616553] validate_otc_name_with_invalid_input
+│ PASS [mem:  52397, cpu:  16179592] generate_otc_name_with_large_amount
+│ PASS [mem:  48473, cpu:  15563226] pad_number_with_single_digit
+│ · with traces
+│ | result: h'303007'
+│ PASS [mem:  48473, cpu:  15563226] pad_number_with_two_digits
+│ · with traces
+│ | result: h'30302A'
+│ PASS [mem:  50877, cpu:  16203990] pad_number_with_three_digits
+│ · with traces
+│ | result: h'3003E7'
+│ PASS [after 100 tests] prop_validate_otc_name
+│ PASS [after 100 tests] prop_generate_otc_name_reversible
+┕━━━━━━━━━━━━━━━━━ with --seed=3994044190 → 9 tests | 9 passed | 0 failed
 ```
 
 Running Tests
