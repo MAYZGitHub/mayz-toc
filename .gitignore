@@ -24,3 +24,5 @@ cabal.project.local~
 
 
 _OLD/**/*
+
+**/files-contents*

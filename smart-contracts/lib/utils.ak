@@ -3,7 +3,10 @@ use aiken/collection/dict
 use aiken/collection/list
 use aiken/collection/pairs
 use aiken/crypto.{VerificationKeyHash}
+use aiken/fuzz
 use aiken/primitive/bytearray
+use aiken/primitive/int
+use aiken/primitive/string
 use cardano/address.{VerificationKey}
 use cardano/assets.{
   PolicyId, Value, add, match, merge, quantity_of, tokens, zero,
@@ -431,17 +434,24 @@ pub fn generate_otc_name(token_tn: ByteArray, amount: Int) -> ByteArray {
   bytearray.concat(with_separator, formatted_amount)
 }
 
+// fn format_large_number(n: Int) -> ByteArray {
+//   let result = #""
+//   if n < 1000 {
+//     builtin.integer_to_bytearray(True, 0, n)
+//   } else {
+//     format_with_separators(n, result)
+//   }
+// }
+
 /// Format a large number into a readable string
 /// 
 /// # Arguments
 /// * n - The number to format
 fn format_large_number(n: Int) -> ByteArray {
-  let result = #""
-  if n < 1000 {
-    builtin.integer_to_bytearray(True, 0, n)
-  } else {
-    format_with_separators(n, result)
-  }
+  let number_as_string = int.to_string(n)
+  // Convierte a cadena
+  bytearray.from_string(number_as_string)
+  // Convierte la cadena a ByteArray
 }
 
 fn format_with_separators(n: Int, acc: ByteArray) -> ByteArray {
@@ -505,4 +515,155 @@ pub fn get_redeemer_of(
   outRef: OutputReference,
 ) -> List<Redeemer> {
   pairs.get_all(redeemers, Spend(outRef))
+}
+
+// Helper to create mock transaction
+pub fn mock_transaction(
+  reference_inputs: List<Input>,
+  inputs: List<Input>,
+  outputs: List<Output>,
+  mint: Value,
+  extra_signatories: List<ByteArray>,
+) -> Transaction {
+  Transaction {
+    ..transaction.placeholder,
+    reference_inputs: reference_inputs,
+    inputs: inputs,
+    outputs: outputs,
+    mint: mint,
+    extra_signatories: extra_signatories,
+  }
+}
+
+//  unit testing
+
+test generate_otc_name_inspect() {
+  let token_tn = #"544f4b454e"
+  let amount = 1000000
+
+  let result = generate_otc_name(token_tn, amount)
+  trace @"result": result
+  trace @"result": bytearray.to_string(result)
+  // Crea un error con el resultado para inspeccionarlo
+  expect result == #"4f54432d544f4b454e2d31303030303030"
+}
+
+test validate_otc_name_with_valid_input() {
+  let name = #"4f54432d544f4b454e2d31303030303030"
+  // "OTC-TOKEN-1000000"
+  let token_tn = #"544f4b454e"
+  // "TOKEN"
+  let token_amount = 1000000
+  expect validate_otc_name(name, token_tn, token_amount) == True
+}
+
+test validate_otc_name_with_invalid_input() {
+  let name = #"4f54432d574f4e472d31303030303030"
+  // "OTC-WRONG-1000000"
+  let token_tn = #"544f4b454e"
+  // "TOKEN"
+  let token_amount = 1000000
+  expect validate_otc_name(name, token_tn, token_amount) == False
+}
+
+test generate_otc_name_with_large_amount() {
+  let token_tn = #"544f4b454e"
+  // "TOKEN"
+  let amount = 1234567890
+  let result = generate_otc_name(token_tn, amount)
+  expect bytearray.to_string(result) == @"OTC-TOKEN-1234567890"
+}
+
+test pad_number_with_single_digit() {
+  trace @"result": pad_number(7)
+  expect pad_number(7) == #"303007"
+  // Should return "007"
+}
+
+test pad_number_with_two_digits() {
+  trace @"result": pad_number(42)
+  expect pad_number(42) == #"30302a"
+  // Should return "042"
+}
+
+test pad_number_with_three_digits() {
+  trace @"result": pad_number(999)
+  expect pad_number(999) == #"3003e7"
+  // Should return "999"
+}
+
+test prop_validate_otc_name(
+  inputs: (ByteArray, Int) via generate_otc_name_inputs_fuzzer(),
+) {
+  let (token_name_bytes, amount) = inputs
+  // Generate the OTC name
+  let generated_name = generate_otc_name(token_name_bytes, amount)
+
+  // Validate the generated name with the token_name_bytes and amount
+  let is_valid = validate_otc_name(generated_name, token_name_bytes, amount)
+
+  // Trace values for debugging
+  trace @"token_name (hex)": bytearray.to_hex(token_name_bytes)
+  trace @"amount": amount
+  trace @"generated_name (hex)": bytearray.to_hex(generated_name)
+  trace @"is_valid": is_valid
+
+  // Ensure the validation passes
+  expect is_valid == True
+}
+
+fn generate_otc_name_inputs_fuzzer() -> Fuzzer<(ByteArray, Int)> {
+  fuzz.map2(
+    fuzz.bytearray_between(1, 10),
+    // Fuzz ByteArray for token_name
+    fuzz.int_between(1, 1_000_000),
+    // Fuzz Int for amount
+    fn(token_name, amount) { (token_name, amount) },
+  )
+}
+
+test prop_generate_otc_name_reversible(
+  inputs: (ByteArray, Int) via generate_otc_name_inputs_fuzzer(),
+) {
+  let (token_name_bytes, amount) = inputs
+  // Convert the token_name_bytes to hex for tracing
+  let token_name_hex = bytearray.to_hex(token_name_bytes)
+  trace @"token_name (hex)": token_name_hex
+
+  // Trace the amount
+  trace @"amount": amount
+
+  // Generate the name
+  let generated_name = generate_otc_name(token_name_bytes, amount)
+  trace @"generated_name": generated_name
+
+  // Convert the generated name to hex
+  let name_as_hex = bytearray.to_hex(generated_name)
+  trace @"name_as_hex": name_as_hex
+
+  // Build the expected readable name
+  let expected_readable_name =
+    string.concat(
+      string.concat(@"OTC-", bytearray.to_hex(token_name_bytes)),
+      string.concat(@"-", string.from_int(amount)),
+    )
+  trace @"expected_readable_name": expected_readable_name
+
+  // Build the expected name hex directly from the bytearray components
+  let expected_name_bytes =
+    builtin.append_bytearray(
+      bytearray.from_string(@"OTC-"),
+      builtin.append_bytearray(
+        token_name_bytes,
+        builtin.append_bytearray(
+          bytearray.from_string(@"-"),
+          bytearray.from_string(string.from_int(amount)),
+        ),
+      ),
+    )
+  let expected_name_hex = bytearray.to_hex(expected_name_bytes)
+  trace @"expected_name_hex": expected_name_hex
+
+  // Validate that the generated name matches the expected name
+  expect name_as_hex == expected_name_hex
 }
