@@ -150,6 +150,9 @@ Here are the links to the Catalyst Milestone reports for the project. Each repor
 
 [Milestone 2 Report](./catalyst-reports/MILESTONE-02.md)
 
+[Milestone 3 Report](./catalyst-reports/MILESTONE-03.md)
+
+
 ## Links
 - Tackling Slippage on Cardano: MAYZ Trustless OTC Smart Contract - Catalyst Proposal: [Proposal](https://cardano.ideascale.com/c/idea/120544) 
 - Catalyst Milestones status page: [Milestones](https://milestones.projectcatalyst.io/projects/1200222) 
