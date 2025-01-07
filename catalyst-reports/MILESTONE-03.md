@@ -33,20 +33,10 @@ This milestone focuses on the implementation and testing of the MAYZ Trustless O
 
 The test suite includes:
 
-1. **Unit Tests**
-   - Protocol contract function validation
-   - OTC contract operation testing
-   - NFT policy minting/burning scenarios
-
-2. **Integration Tests**
-   - End-to-end transaction flow testing
-   - Multiple operation sequence validation
-   - Edge case handling
-
-3. **Validation Tests**
-   - Parameter boundary testing
-   - Authorization check verification
-   - Error condition handling
+- 29 test cases across all components
+- 100% pass rate
+- Property-based testing for critical components
+- Coverage for both success and failure scenarios
 
 ## Technical Documentation
 
